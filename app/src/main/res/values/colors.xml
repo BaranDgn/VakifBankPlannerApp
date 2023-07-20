@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    <color name="colorPrimary">#FFAE42</color>
+    <color name="colorPrimaryDark">#E28913</color>
+    <color name="colorAccent">#674c47</color>
+    <color name="primaryTextColor">#5A5A5A</color>
+    <color name="colorActionBar">#48483E</color>
+    <!-- Secondary -->
+    <!--
+    <color name="colorGreyText">@color/smokeyGrey</color>
+    <color name="colorGreyEditText">@color/martini</color>
+    <color name="lightGrey">@color/gainsboro</color>
+    <color name="colorGreen">@color/appleGreen</color>
+    <color name="colorLightGrey">@color/mercury</color>
+    -->
+    <!-- Background
+    <color name="colorWhite80">@color/whiteDE</color>
+    <color name="colorGreyBackgroundProfile">@color/whiteSmoke</color>
+    <color name="colorTransparent">@color/transparent</color>
+    <color name="colorDavyGray">@color/davyGrey</color>
+    <color name="colorPastelGray">@color/pastelGray</color>
+-->
+    <!-- Others
+    <color name="colorMainPage">@color/whiteSmoke</color>
+    <color name="textBlack">@color/rangoonGreen</color>
+    <color name="dividerGrey">@color/mercury</color>
+    <color name="whiteText">@color/alabaster</color>
+    <color name="colorBlack">@color/black</color>
+    <color name="colorDarkGrey">@color/balticSeaDE</color>
+    <color name="softPink">@color/dawnPink</color>
+    <color name="colorDarkerGray">@color/silverChalice</color>
+    <color name="colorCottonSeed">@color/cottonSeed</color>
+    <color name="colorDarkCerulean">@color/darkCerulean</color>
+     -->
+</resources>
+
