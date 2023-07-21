@@ -1,8 +1,9 @@
 package com.example.vakifbankplannerapp.presentation.bottomBar
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,9 +28,12 @@ fun BottombarNavigation() {
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         bottomBar = {BottomNavBar( navController = navController)},
+
     ) {
-        HomeNavGraph(navHostController = navController)
-        it
+
+        Box(modifier = Modifier.padding(it)){
+            HomeNavGraph(navHostController = navController)
+        }
     }
 
 }
@@ -47,7 +51,7 @@ fun BottomNavBar(navController: NavHostController) {
     val bottomBarDestination = screens.any{it.route == currentDestination?.route}
 
     if(bottomBarDestination){
-        BottomNavigation(backgroundColor = Color.White, elevation = 5.dp){
+        BottomNavigation(backgroundColor = Color(0xffFFAE42), elevation = 5.dp){
             screens.forEach{screen ->
                 AddItem(
                     screen = screen,
@@ -78,13 +82,14 @@ fun RowScope.AddItem(
         selected = currentDestination?.hierarchy?.any {
             it.route == screen.route
         } == true,
-        selectedContentColor = Color.DarkGray,
+        selectedContentColor = Color.Black,
         unselectedContentColor = Color.Gray,
         onClick = {
             navController.navigate(screen.route) {
                 popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true
             }
-        }
+        },
+
     )
 }

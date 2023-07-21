@@ -94,6 +94,13 @@ dependencies {
     // Splash API
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // Add the datetime library
 
+    implementation "com.maxkeppeler.sheets-compose-dialogs:core:1.0.2"
+// CLOCK
+    implementation "com.maxkeppeler.sheets-compose-dialogs:clock:1.0.2"
+
+    // CALENDAR
+    implementation "com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2"
 
 }

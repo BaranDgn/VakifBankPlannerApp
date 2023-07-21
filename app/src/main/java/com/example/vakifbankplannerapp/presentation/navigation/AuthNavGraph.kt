@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.vakifbankplannerapp.presentation.authantication.LoginScreeen
+import com.example.vakifbankplannerapp.presentation.authantication.LoginScreen
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController,
@@ -16,7 +16,7 @@ fun NavGraphBuilder.authNavGraph(
         startDestination = AuthScreen.Login.route//startDestination
     ){
         composable(route = AuthScreen.Login.route){
-            LoginScreeen(navController)
+            LoginScreen(navController)
         }
     }
 }
