@@ -45,21 +45,21 @@ fun NavGraphBuilder.featureNavGraph(
 ){
     navigation(
         route = Graph.FEATURE,
-        startDestination = FeatureScreens.MeetingScreen.route
+        startDestination = FeatureScreens.NewMeetingScreen.route
     ){
         //composable()
-        composable(route = FeatureScreens.EventScreen.route){
+        composable(route = FeatureScreens.NewMeetingScreen.route){
             NewMeetingScreen(navHostController)
         }
-        composable(route = FeatureScreens.BirthdayScreen.route){
+        composable(route = FeatureScreens.NewEventScreen.route){
             NewEventScreen(navHostController)
         }
     }
 }
 
 sealed class FeatureScreens(val route: String){
-    object MeetingScreen : FeatureScreens(route = "meeting_screen")
-    object EventScreen : FeatureScreens(route = "event_screen")
+    object NewMeetingScreen : FeatureScreens(route = "meeting_screen")
+    object NewEventScreen : FeatureScreens(route = "event_screen")
     object BirthdayScreen : FeatureScreens(route = "birthday_screen")
 }
 
