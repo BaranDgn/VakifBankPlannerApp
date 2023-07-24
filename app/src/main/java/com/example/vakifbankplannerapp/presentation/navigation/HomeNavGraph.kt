@@ -30,7 +30,7 @@ fun HomeNavGraph(navHostController: NavHostController){
             EventScreen(navHostController)
         }
         composable(route = BottomBarScreen.Birthday.route){
-            BirthdayScreen(navHostController)
+            BirthdayScreen()
         }
         featureNavGraph(navHostController = navHostController)
         authNavGraph(navHostController, AuthScreen.Login.route)
@@ -40,6 +40,8 @@ fun HomeNavGraph(navHostController: NavHostController){
 
 fun NavGraphBuilder.featureNavGraph(
     navHostController: NavHostController
+
+
 ){
     navigation(
         route = Graph.FEATURE,
