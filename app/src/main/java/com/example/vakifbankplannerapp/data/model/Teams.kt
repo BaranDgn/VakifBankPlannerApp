@@ -4,6 +4,7 @@ data class Teams(
     val teamName : String,
     val meetingType : String,
     val meetingDate : String,
+    val meetingClock : String,
     val meetingContent : String,
     val meetingNotes : String,
 )

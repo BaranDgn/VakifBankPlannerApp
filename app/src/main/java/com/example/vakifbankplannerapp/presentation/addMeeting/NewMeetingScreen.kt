@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -235,6 +236,7 @@ sealed class InputTypeForAddingMeeting(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateTimePickerScreen() {
     //to trigger the dialog
@@ -257,6 +259,7 @@ fun DateTimePickerScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClockTimePicker(clockState : SheetState) {
     //val clockState = rememberSheetState()

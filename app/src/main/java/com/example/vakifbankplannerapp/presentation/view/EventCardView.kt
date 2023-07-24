@@ -24,6 +24,7 @@ fun EventCardView(
     eventName : String,
     eventTeam: String,
     eventDate : String,
+    eventClock: String,
     eventContent : String,
     eventNotes: String,
     navController: NavController
@@ -65,6 +66,10 @@ fun EventCardView(
                     )
                     Text(
                         text = eventDate,
+                        style = TextStyle(color = Color.Black, fontSize = 16.sp)
+                    )
+                    Text(
+                        text = eventClock,
                         style = TextStyle(color = Color.Black, fontSize = 16.sp)
                     )
                     Text(

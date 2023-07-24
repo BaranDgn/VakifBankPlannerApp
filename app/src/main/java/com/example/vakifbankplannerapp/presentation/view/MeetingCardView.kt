@@ -22,6 +22,7 @@ fun MeetingCardView(
     meetingName: String,
     meetingType: String,
     meetingDate: String,
+    meetingClock: String,
     meetingContent: String,
     meetingNotes: String,
     navController: NavController
@@ -62,6 +63,10 @@ fun MeetingCardView(
                             text = meetingDate,
                             style = TextStyle(color = Color.Black, fontSize = 16.sp)
                         )
+                    Text(
+                        text = meetingClock,
+                        style = TextStyle(color = Color.Black, fontSize = 16.sp)
+                    )
                         Text(
                             text = meetingContent,
                             style = TextStyle(color = Color.Black, fontSize = 16.sp)

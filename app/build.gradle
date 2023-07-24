@@ -47,6 +47,12 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    kotlinOptions {
+        allWarningsAsErrors = false
+        freeCompilerArgs += [
+                '-opt-in=androidx.compose.material3.ExperimentalMaterial3Api'
+        ]
+    }
 }
 
 dependencies {
@@ -103,4 +109,7 @@ dependencies {
     // CALENDAR
     implementation "com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2"
 
+    def material3_version = "1.0.1"
+    //noinspection GradleDependency
+    implementation "androidx.compose.material3:material3:$material3_version"
 }
