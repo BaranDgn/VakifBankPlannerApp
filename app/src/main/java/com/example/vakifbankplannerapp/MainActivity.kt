@@ -10,7 +10,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
 import com.example.vakifbankplannerapp.presentation.navigation.RootNavigationGraph
 import com.example.vakifbankplannerapp.ui.theme.VakifbankPlannerAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

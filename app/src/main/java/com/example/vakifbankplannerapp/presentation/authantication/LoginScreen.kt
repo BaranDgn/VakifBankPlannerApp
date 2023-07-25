@@ -43,7 +43,7 @@ import com.example.vakifbankplannerapp.ui.theme.Shapes
 @Composable
 fun LoginScreen(
     navController: NavController,
-  //  signUpClick: () -> Unit,
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
 
     val context = LocalContext.current
@@ -56,8 +56,18 @@ fun LoginScreen(
     val passwordFocusRequester = FocusRequester()
     val focusManager : FocusManager = LocalFocusManager.current
 
-    var email: String by remember{ mutableStateOf("") }
+    var email: Int by remember{ mutableStateOf(2020) }
     var password: String by remember{ mutableStateOf("") }
+
+    var sicilNumber by remember{
+        loginViewModel.sicil
+    }
+
+    var passwordForLogin by remember{
+        loginViewModel.password
+    }
+
+
 
     var passwordVisibility by remember { mutableStateOf(false) }
 
@@ -89,8 +99,8 @@ fun LoginScreen(
 
             //Email
             TextField(
-                value = email,
-                onValueChange = {email = it},
+                value = email.toString(),
+                onValueChange = {email = it.toInt()},
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(1.dp, CircleShape)
@@ -145,12 +155,15 @@ fun LoginScreen(
                 }
             )
 
-
+            passwordForLogin = password
+            sicilNumber = email
             //Button
             Button(
                 onClick = {
                    // viewModel.logInUser(email, password)
                     //  onClick()
+
+                        loginViewModel.checkIfUserLogin(sicilNumber, passwordForLogin)
                           navController.navigate(Graph.HOME){
                               popUpTo(AuthScreen.Login.route){inclusive = true}
 
