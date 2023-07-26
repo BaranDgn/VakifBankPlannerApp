@@ -2,7 +2,9 @@ package com.example.vakifbankplannerapp.presentation.meeting
 
 import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,8 +30,10 @@ import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.Teams
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vakifbankplannerapp.presentation.view.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -153,37 +157,59 @@ fun MeetingOrderByTeam(
 ) {
     LazyColumn(contentPadding = PaddingValues(5.dp)){
         items(
-            items = myList,
-            itemContent = {
-                item ->
-                val currentItem by rememberUpdatedState(newValue = item)
-                val dismissState = rememberDismissState(
-                    confirmStateChange = {
-                        if(it == DismissValue.DismissedToEnd){
-                            myList = myList - currentItem
-                            navController.navigate(
-                                FeatureScreens.NewMeetingScreen.route
-                            )
-                        }
-                        true
+            items = myList
+        ) { item ->
+            val dismissState = rememberDismissState(
+                confirmStateChange = {
+                    if (it == DismissValue.DismissedToEnd) {
+                        navController.navigate(
+                            FeatureScreens.NewMeetingScreen.route
+                        )
+                    } else {
+                        false
                     }
-                )
-                SwipeToDismiss(
-                    dismissThresholds = { FractionalThreshold(0.25f) },
-                    state = dismissState,
-                    background = { SwipeBackground(dismissState = dismissState) },
-                ) {
-                    MeetingCardView(
-                        meetingName = currentItem.teamName,
-                        meetingType =  currentItem.meetingType,
-                        meetingDate =  currentItem.meetingDate,
-                        meetingClock =  currentItem.meetingClock,
-                        meetingContent = currentItem.meetingContent,
-                        meetingNotes = currentItem.meetingNotes,
-                        navController = navController )
+                    it != DismissValue.DismissedToEnd
+                }
+            )
+            LaunchedEffect(dismissState){
+                if (item == myList.first()){
+                    dismissState.animateTo(
+                        DismissValue.DismissedToEnd,
+                        anim = tween(
+                            durationMillis = 400,
+                            easing = LinearOutSlowInEasing
+                        )
+                    )
+                    delay(100)
+                    dismissState.animateTo(
+                        DismissValue.Default,
+                        anim = tween(
+                            durationMillis = 400,
+                            easing = LinearOutSlowInEasing
+                        )
+                    )
                 }
             }
-        )
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.StartToEnd),
+                dismissThresholds = { direction ->
+                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+                },
+                background = { SwipeBackground(dismissState = dismissState) },
+                dismissContent = {
+                    MeetingCardView(
+                        meetingName = item.teamName,
+                        meetingType = item.meetingType,
+                        meetingDate = item.meetingDate,
+                        meetingClock = item.meetingClock,
+                        meetingContent = item.meetingContent,
+                        meetingNotes = item.meetingNotes,
+                        navController = navController
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -272,23 +298,17 @@ fun FloatingActionButton(
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 fun SwipeBackground(dismissState: DismissState) {
-    val direction = dismissState.dismissDirection ?: return
-
     val color by animateColorAsState(
         when (dismissState.targetValue) {
-            DismissValue.Default -> Color.White
+            DismissValue.Default -> Color.Transparent
             DismissValue.DismissedToEnd -> Color.Green
             DismissValue.DismissedToStart -> Color.Red
         }
     )
-    val alignment = when (direction) {
-        DismissDirection.StartToEnd -> Alignment.CenterStart
-        DismissDirection.EndToStart -> Alignment.CenterEnd
-    }
-    val icon = when (direction) {
-        DismissDirection.StartToEnd -> Icons.Default.Done
-        DismissDirection.EndToStart -> Icons.Default.Delete
-    }
+    val alignment = Alignment.CenterStart
+
+    val icon = Icons.Default.Done
+
     val scale by animateFloatAsState(
         if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
     )
