@@ -58,27 +58,11 @@ fun EventScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("Add Event") },
-                backgroundColor =Color(0xFF4E4F50),
+                backgroundColor =Color.LightGray,
                 icon = {Icon(Icons.Filled.Add, contentDescription = "")},
                 onClick ={
-                    //scope.launch {
-                        navController.navigate(FeatureScreens.NewEventScreen.route)
-                   // }
                     scope.launch {
-                        val result = snackbarHostState
-                            .showSnackbar(
-                                message = "Snackbar",
-                                actionLabel = "",
-                                duration = SnackbarDuration.Indefinite
-                            )
-                        when(result){
-                            SnackbarResult.ActionPerformed -> {
-
-                            }
-                            SnackbarResult.Dismissed ->{
-
-                            }
-                        }
+                        navController.navigate(FeatureScreens.NewEventScreen.route)
                     }
 
                 },

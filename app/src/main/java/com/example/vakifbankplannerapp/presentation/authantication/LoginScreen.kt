@@ -1,13 +1,9 @@
 package com.example.vakifbankplannerapp.presentation.authantication
 
-import android.graphics.drawable.shapes.Shape
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.R
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -23,7 +19,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -32,10 +27,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.vakifbankplannerapp.R.drawable
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
 import com.example.vakifbankplannerapp.ui.theme.Shapes
@@ -46,17 +39,12 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current
-
-    //DataStore
-
-
-    //val authResource = viewModel?.loginFlow?.collectAsState()
+   // val context = LocalContext.current
 
     val passwordFocusRequester = FocusRequester()
     val focusManager : FocusManager = LocalFocusManager.current
 
-    var email: Int by remember{ mutableStateOf(2020) }
+    var sicil: String by remember{ mutableStateOf("") }
     var password: String by remember{ mutableStateOf("") }
 
     var sicilNumber by remember{
@@ -66,8 +54,6 @@ fun LoginScreen(
     var passwordForLogin by remember{
         loginViewModel.password
     }
-
-
 
     var passwordVisibility by remember { mutableStateOf(false) }
 
@@ -97,17 +83,16 @@ fun LoginScreen(
             )
 
 
-            //Email
+            //Sicil Number
             TextField(
-                value = email.toString(),
-                onValueChange = {email = it.toInt()},
+                value = sicil,
+                onValueChange = {sicil = it},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(1.dp, CircleShape)
-                    .focusRequester(focusRequester = FocusRequester())
-                ,
-                leadingIcon = { Icon(imageVector = InputType.UserName.icon, contentDescription = null)},
-                label = { Text(text = InputType.UserName.label) },
+                    .shadow(1.dp, RoundedCornerShape(15.dp))
+                    .focusRequester(focusRequester = FocusRequester()),
+                leadingIcon = { Icon(imageVector = InputType.SicilNum.icon, contentDescription = null)},
+                label = { Text(text = InputType.SicilNum.label) },
                 //shape = Shapes.small,
                 shape = Shapes.medium,
                 colors = TextFieldDefaults.textFieldColors(
@@ -116,8 +101,8 @@ fun LoginScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent),
                 singleLine = true,
-                keyboardOptions = InputType.UserName.keyboardOptions,
-                visualTransformation = InputType.UserName.visualTransformation,
+                keyboardOptions = InputType.SicilNum.keyboardOptions,
+                visualTransformation = InputType.SicilNum.visualTransformation,
                 keyboardActions = KeyboardActions(
                     onNext = {passwordFocusRequester.requestFocus()})
             )
@@ -129,7 +114,7 @@ fun LoginScreen(
                 onValueChange = {password = it},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(1.dp, CircleShape)
+                    .shadow(1.dp, RoundedCornerShape(15.dp))
                     .focusRequester(focusRequester = passwordFocusRequester),
                 leadingIcon = { Icon(imageVector = InputType.Password.icon, contentDescription = null)},
                 label = { Text(text = InputType.Password.label) },
@@ -156,14 +141,14 @@ fun LoginScreen(
             )
 
             passwordForLogin = password
-            sicilNumber = email
+            sicilNumber = sicil
             //Button
             Button(
                 onClick = {
                    // viewModel.logInUser(email, password)
                     //  onClick()
 
-                        loginViewModel.checkIfUserLogin(sicilNumber, passwordForLogin)
+                        //loginViewModel.checkIfUserLogin(sicilNumber.toInt(), passwordForLogin)
                           navController.navigate(Graph.HOME){
                               popUpTo(AuthScreen.Login.route){inclusive = true}
 
@@ -172,13 +157,13 @@ fun LoginScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(2.dp, CircleShape),
+                    .shadow(2.dp, RoundedCornerShape(15.dp)),
                 colors = ButtonDefaults.buttonColors(
                     Color(0xFF4E4F50),
                     contentColor = Color(0xFFE2DED0)
                 )
             ) {
-                Text(text = "LOG IN", modifier = Modifier.padding(vertical = 8.dp))
+                Text(text = "GİRİŞ YAP", modifier = Modifier.padding(vertical = 8.dp))
             }
 
         }
@@ -214,14 +199,14 @@ sealed class InputType(
     val keyboardOptions: KeyboardOptions,
     val visualTransformation: VisualTransformation
 ){
-    object UserName : InputType(
-        label = "Email",
+    object SicilNum : InputType(
+        label = "Sicil Numarası",
         icon = Icons.Default.Person,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
         visualTransformation = VisualTransformation.None
     )
     object Password : InputType(
-        label = "Password",
+        label = "Şifre",
         icon= Icons.Default.Lock,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
         visualTransformation = PasswordVisualTransformation()

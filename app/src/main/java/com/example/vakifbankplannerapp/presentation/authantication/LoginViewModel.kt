@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vakifbankplannerapp.data.repository.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,7 +13,7 @@ class LoginViewModel@Inject constructor(
     private val loginRepo : LoginRepository
 ): ViewModel() {
 
-    val sicil = mutableStateOf(0)
+    val sicil = mutableStateOf("")
     val password = mutableStateOf("")
 
     fun checkIfUserLogin(sicil : Int, password : String){

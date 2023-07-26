@@ -57,8 +57,9 @@ fun MeetingCardView(
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        Color.LightGray,
-                        Color.White
+                        Color.White,
+                        Color.LightGray
+
                     )
                 )
             )

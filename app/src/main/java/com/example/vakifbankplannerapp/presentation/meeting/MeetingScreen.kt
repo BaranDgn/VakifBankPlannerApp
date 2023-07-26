@@ -26,6 +26,8 @@ import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vakifbankplannerapp.presentation.view.*
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 
@@ -45,10 +47,10 @@ fun MeetingScreen(
                      searchWidgetState = searchWidgetState,
                      searchTextState = searchTextState,
                      onTextChange = {
-                                    meetingViewModel.updateSearchTextState(newValue = it)
+                         meetingViewModel.updateSearchTextState(newValue = it)
                      },
                      onCloseClicked = {
-                                      meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+                         meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
                      },
                      onSearchClicked = {},
                      onSearchTriggered = { meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
@@ -58,39 +60,47 @@ fun MeetingScreen(
         },
 
         floatingActionButton = {
+            //PopupWithLabel(text="Add Meeting"){
+            //    navController.navigate(FeatureScreens.NewMeetingScreen.route)
+            //}
             ExtendedFloatingActionButton(
                 text = { Text("Add Meeting") },
+                backgroundColor =Color.LightGray,
                 icon = {Icon(Icons.Filled.Add, contentDescription = "")},
-                backgroundColor =Color(0xFF4E4F50),// Color(0xFFE2DED0),
                 onClick ={
-                        scope.launch {
-                            navController.navigate(FeatureScreens.NewMeetingScreen.route)
-                        }
-                     },
+                    scope.launch {
+                        navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                    }
 
-            )
+                },
+
+                )
         }
     ){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xfff2f2f2))
-                .padding(it)
+        val isLoading by meetingViewModel.isLoading.collectAsState()
+        val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = meetingViewModel::loadStuff
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xfff2f2f2))
+                    .padding(it)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                // MeetingItems("Team 1")
+                //Meetin Items
+                MeetingOrderByTeam(navController)
 
-            Spacer(modifier = Modifier.height(16.dp))
-           // MeetingItems("Team 1")
-            //Meetin Items
-            MeetingOrderByTeam(navController)
+                Text("GoTo", modifier = Modifier.clickable { navController.navigate(FeatureScreens.NewMeetingScreen.route) })
+            }
 
-            Text("GoTo", modifier = Modifier.clickable { navController.navigate(FeatureScreens.NewMeetingScreen.route) })
         }
-
 
     }
 }
-
-
 
 var myList = listOf(
     Teams(
@@ -142,6 +152,7 @@ var myList = listOf(
         "Every team's employee must attend",
     )
 )
+
 @Composable
 fun MeetingOrderByTeam(
     navController: NavController

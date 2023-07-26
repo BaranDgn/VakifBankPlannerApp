@@ -112,4 +112,8 @@ dependencies {
     def material3_version = "1.0.1"
     //noinspection GradleDependency
     implementation "androidx.compose.material3:material3:$material3_version"
+
+    //Swipe Refresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.27.0"
+
 }
