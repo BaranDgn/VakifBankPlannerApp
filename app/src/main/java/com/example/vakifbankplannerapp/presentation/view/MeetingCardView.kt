@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.LinearGradient
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -40,8 +41,8 @@ fun MeetingCardView(
     meetingNotes: String,
     navController: NavController
 ) {
-
-
+    var expanded by remember { mutableStateOf(false) }
+    var hasMore by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,8 +53,7 @@ fun MeetingCardView(
         elevation = 5.dp
     ) {
         Column(modifier = Modifier
-            .height(160.dp)
-            // .background(Color.White)
+
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
@@ -71,65 +71,101 @@ fun MeetingCardView(
                 contentAlignment = Alignment.BottomStart
             ){
 
-                Row(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .animateContentSize()
+                ){
+                    Row(modifier = Modifier.fillMaxSize()) {
 
-                    Column(modifier = Modifier
-                        .weight(2f)
-                        //.fillMaxSize()
-                        .padding(4.dp),
-                         verticalArrangement = Arrangement.SpaceEvenly
-                        //, horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                        Column(modifier = Modifier
+                            .weight(2f)
+                            //.fillMaxSize()
+                            .padding(4.dp),
+                            verticalArrangement = Arrangement.SpaceEvenly
+                            //, horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
-                        Text(
-                            text = meetingName,
-                            style = TextStyle(color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = meetingType,
-                            style = TextStyle(color = Color.Black, fontSize = 19.sp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Meeting Content: ",
-                            style = TextStyle(color = Color.Black, fontSize = 14.sp)
-                        )
-                        Text(
-                            text = meetingContent,
-                            style = TextStyle(color = Color.Black, fontSize = 17.sp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Meeting Notes: ",
-                            style = TextStyle(color = Color.Black, fontSize = 14.sp,  textDecoration = TextDecoration.Underline)
-                        )
-                        Text(
-                            text = meetingNotes ,
-                            style = TextStyle(color = Color.Black, fontSize = 17.sp)
-                        )
+                            Text(
+                                text = meetingName,
+                                style = TextStyle(color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = meetingType,
+                                style = TextStyle(color = Color.Black, fontSize = 19.sp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Meeting Content: ",
+                                style = TextStyle(color = Color.Black, fontSize = 14.sp)
+                            )
+                            Text(
+                                text = meetingContent,
+                                style = TextStyle(color = Color.Black, fontSize = 17.sp)
+                            )
+                        }
+
+                        Column(modifier = Modifier
+                            // .fillMaxSize()
+                            .padding(4.dp)
+                            .weight(1f)
+                            , verticalArrangement = Arrangement.Center
+                            // , horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Text(
+                                text = meetingDate,
+                                style = TextStyle(color = Color.Black, fontSize = 18.sp)
+                            )
+                            Text(
+                                text = meetingClock,
+                                style = TextStyle(color = Color.Black, fontSize = 18.sp)
+                            )
+
+                        }
                     }
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = "Meeting Notes: ",
+                        style = TextStyle(color = Color.Black, fontSize = 14.sp,  textDecoration = TextDecoration.Underline)
+                    )
 
-                    Column(modifier = Modifier
-                        // .fillMaxSize()
-                        .padding(4.dp)
-                        .weight(1f)
-                    , verticalArrangement = Arrangement.Center
-                   // , horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        Text(
-                            text = meetingDate,
-                            style = TextStyle(color = Color.Black, fontSize = 18.sp)
-                        )
-                        Text(
-                            text = meetingClock,
-                            style = TextStyle(color = Color.Black, fontSize = 18.sp)
-                        )
-
+                    Text(
+                        text = meetingNotes,
+                        style = TextStyle(color = Color.Black, fontSize = 17.sp),
+                        maxLines = if (expanded) Int.MAX_VALUE else 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.animateContentSize(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = LinearOutSlowInEasing
+                            )
+                        ),
+                        onTextLayout = {
+                            if(it.hasVisualOverflow){
+                                hasMore = true
+                            }
+                        }
+                    )
+                    if (hasMore){
+                        IconButton (
+                            onClick = { expanded = !expanded },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .alpha(0.5f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = "Expandable Icon",
+                                tint = Color.Black,
+                                modifier = Modifier
+                                    .alpha(0.5f)
+                                    .rotate(if (expanded) 180f else 0f)
+                            )
+                        }
                     }
                 }
-
             }
         }
     }
