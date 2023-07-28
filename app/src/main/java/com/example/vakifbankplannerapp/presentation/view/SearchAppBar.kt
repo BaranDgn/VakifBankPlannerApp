@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
@@ -126,7 +127,13 @@ fun DefaultAppBar(
     text: String
 ) {
         TopAppBar(
-            title = {Text(text = text, color = Color.Black)},
+            title = {
+                Text(
+                    text = text,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             actions = {
                 IconButton(onClick = { onSearchClicked() }) {
                     Icon(imageVector = Icons.Filled.Search, contentDescription = "",
