@@ -95,8 +95,7 @@ fun MeetingScreen(
                     .padding(it)
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
-                // MeetingItems("Team 1")
-                //Meetin Items
+
                 MeetingOrderByTeam(navController)
 
                 Text("GoTo", modifier = Modifier.clickable { navController.navigate(FeatureScreens.NewMeetingScreen.route) })
@@ -310,14 +309,14 @@ fun FloatingActionButton(
 fun SwipeBackground(dismissState: DismissState) {
     val color by animateColorAsState(
         when (dismissState.targetValue) {
-            DismissValue.Default -> Color.Transparent
-            DismissValue.DismissedToEnd -> Color.Green
+            DismissValue.Default -> Color.Black
+            DismissValue.DismissedToEnd -> Color(0xffFFAE42)
             DismissValue.DismissedToStart -> Color.Red
-        }
+        },
     )
     val alignment = Alignment.CenterStart
 
-    val icon = Icons.Default.Done
+    val icon = Icons.Default.Edit
 
     val scale by animateFloatAsState(
         if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
@@ -326,12 +325,12 @@ fun SwipeBackground(dismissState: DismissState) {
     Box(
         Modifier
             .fillMaxSize()
-            .background(color)
             .padding(horizontal = 20.dp),
         contentAlignment = alignment
     ) {
         Icon(
             icon,
+            tint = color,
             contentDescription = "Localized description",
             modifier = Modifier.scale(scale)
         )

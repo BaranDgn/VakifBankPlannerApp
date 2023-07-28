@@ -8,13 +8,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.vakifbankplannerapp.R
 
+
+val Great_Vibes = FontFamily(
+    Font(R.font.great_vibes_regular)
+)
+
+private val Roboto = FontFamily(
+    Font(R.font.roboto_regular),
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     body1 = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
-    )
+    ),
+    defaultFontFamily = Roboto,
     /* Other default text styles to override
     button = TextStyle(
         fontFamily = FontFamily.Default,
@@ -27,8 +37,4 @@ val Typography = Typography(
         fontSize = 12.sp
     )
     */
-)
-
-val Great_Vibes = FontFamily(
-    Font(R.font.great_vibes_regular)
 )
