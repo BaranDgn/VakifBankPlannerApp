@@ -17,23 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
                 RootNavigationGraph(navController = rememberNavController(), startDestination = Graph.AUTHENTICATION)
-
-
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    VakifbankPlannerAppTheme {
-        Greeting("Android")
     }
 }
