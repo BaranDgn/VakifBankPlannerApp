@@ -30,11 +30,11 @@ import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.Teams
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vakifbankplannerapp.presentation.view.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -96,7 +96,7 @@ fun MeetingScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                MeetingOrderByTeam(navController)
+                MeetingOrderByTeam(navController, meetingViewModel)
 
                 Text("GoTo", modifier = Modifier.clickable { navController.navigate(FeatureScreens.NewMeetingScreen.route) })
             }
@@ -160,13 +160,15 @@ var myList = listOf(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MeetingOrderByTeam(
-    navController: NavController
+    navController: NavController,
+    meetingViewModel: MeetingViewModel,
 ) {
     LazyColumn(contentPadding = PaddingValues(5.dp)){
         items(
             items = myList
         ) { item ->
             val dismissState = rememberDismissState(
+                initialValue = DismissValue.Default,
                 confirmStateChange = {
                     if (it == DismissValue.DismissedToEnd) {
                         navController.navigate(
@@ -178,30 +180,32 @@ fun MeetingOrderByTeam(
                     it != DismissValue.DismissedToEnd
                 }
             )
-            LaunchedEffect(dismissState){
-                if (item == myList.first()){
-                    dismissState.animateTo(
-                        DismissValue.DismissedToEnd,
-                        anim = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
+            LaunchedEffect(meetingViewModel.launchedEffectExecuted){
+                if (!meetingViewModel.launchedEffectExecuted.value) {
+                    if (item == myList.first()){
+                        dismissState.animateTo(
+                            DismissValue.DismissedToEnd,
+                            anim = tween(
+                                durationMillis = 1000,
+                                easing = LinearOutSlowInEasing
+                            )
                         )
-                    )
-                    delay(100)
-                    dismissState.animateTo(
-                        DismissValue.Default,
-                        anim = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
+                        dismissState.animateTo(
+                            DismissValue.Default,
+                            anim = tween(
+                                durationMillis = 1000,
+                                easing = LinearOutSlowInEasing
+                            )
                         )
-                    )
+                    }
+                    meetingViewModel.launchedEffectExecuted.value = true
                 }
             }
             SwipeToDismiss(
                 state = dismissState,
-                directions = setOf(DismissDirection.StartToEnd),
+                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
                 dismissThresholds = { direction ->
-                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+                    FractionalThreshold(0.33f)
                 },
                 background = { SwipeBackground(dismissState = dismissState) },
                 dismissContent = {
@@ -307,6 +311,14 @@ fun FloatingActionButton(
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 fun SwipeBackground(dismissState: DismissState) {
+    // Bu parça yalnızca delete olmadığı için eklendi ve delete yapıldığında konumunu resetliyor
+    if (dismissState.currentValue == DismissValue.DismissedToStart) {
+        LaunchedEffect(Unit) {
+            dismissState.reset()
+        }
+    }
+    val direction = dismissState.dismissDirection ?: return
+
     val color by animateColorAsState(
         when (dismissState.targetValue) {
             DismissValue.Default -> Color.Black
@@ -314,9 +326,15 @@ fun SwipeBackground(dismissState: DismissState) {
             DismissValue.DismissedToStart -> Color.Red
         },
     )
-    val alignment = Alignment.CenterStart
 
-    val icon = Icons.Default.Edit
+    val alignment = when (direction) {
+        DismissDirection.StartToEnd -> Alignment.CenterStart
+        DismissDirection.EndToStart -> Alignment.CenterEnd
+    }
+    val icon = when (direction) {
+        DismissDirection.StartToEnd -> Icons.Default.Edit
+        DismissDirection.EndToStart -> Icons.Default.Delete
+    }
 
     val scale by animateFloatAsState(
         if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f

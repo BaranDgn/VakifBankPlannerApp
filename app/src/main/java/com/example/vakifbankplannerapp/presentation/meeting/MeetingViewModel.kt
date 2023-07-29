@@ -15,6 +15,7 @@ class MeetingViewModel() : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+    var launchedEffectExecuted = MutableStateFlow(false)
 
     fun loadStuff(){
         viewModelScope.launch {
