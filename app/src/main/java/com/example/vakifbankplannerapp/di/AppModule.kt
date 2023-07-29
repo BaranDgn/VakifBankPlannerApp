@@ -1,8 +1,8 @@
 package com.example.vakifbankplannerapp.di
 
-import com.example.vakifbankplannerapp.data.model.Login
-import com.example.vakifbankplannerapp.data.repository.LoginRepository
-import com.example.vakifbankplannerapp.data.service.LoginService
+
+import com.example.vakifbankplannerapp.data.repository.PlannerRepository
+import com.example.vakifbankplannerapp.data.service.PlannerService
 import com.example.vakifbankplannerapp.domain.util.Constant.BASE_URL_FOR_LOGIN
 import dagger.Module
 import dagger.Provides
@@ -22,21 +22,21 @@ object AppModule {
     val inceptorLogging= inceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
     val client = OkHttpClient.Builder().addInterceptor(inceptorLogging).build()
 
-
     @Singleton
     @Provides
-    fun provideLoginRepository(
-        api : LoginService
-    ) = LoginRepository(api)
+    fun providePlannerRepository(
+        api : PlannerService
+    ) = PlannerRepository(api)
 
     @Provides
     @Singleton
-    fun provideLoginApi() : LoginService{
+    fun providePlannerApi() : PlannerService{
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL_FOR_LOGIN)
             .client(client)
             .build()
-            .create(LoginService::class.java)
+            .create(PlannerService::class.java)
     }
+
 }
