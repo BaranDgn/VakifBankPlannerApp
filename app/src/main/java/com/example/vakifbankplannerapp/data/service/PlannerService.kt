@@ -13,12 +13,12 @@ interface PlannerService {
     @POST("Meeting/GetMeeting")
     suspend fun getMeetings() : MeetingItem
 
-    //Add MEeting
+    //Add Meeting
     @POST("/Meeting/AddMeeting")
     suspend fun addMeeting(@Body addMeetingItem: AddMeetingItem)
 
     //Delete Meeting
-    @POST("")
+    @POST("/Meeting/DeleteMeeting")
     suspend fun deleteMeeting(@Body deleteMeetingItem : DeleteItem)
 
     //Events

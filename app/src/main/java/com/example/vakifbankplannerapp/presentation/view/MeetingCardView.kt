@@ -35,7 +35,7 @@ fun MeetingCardView(
     meetingClock: String,
     meetingContent: String,
     meetingNotes: String,
-    navController: NavController
+    navController: NavController,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var hasMore by remember { mutableStateOf(false) }
