@@ -37,7 +37,9 @@ fun LoginScreen(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    //Observing the loading from viewModel
     val authResource = loginViewModel.loginFlow.collectAsState()
+    val isLoading by loginViewModel.loadingState.collectAsState()
     val context = LocalContext.current
 
     val passwordFocusRequester = FocusRequester()
@@ -156,7 +158,23 @@ fun LoginScreen(
             ) {
                 Text(text = "GİRİŞ YAP", modifier = Modifier.padding(vertical = 8.dp))
             }
+
+           // Spacer(modifier = Modifier.height(64.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp).padding(top=80.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.DarkGray, modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+
+
         }
+
 
         authResource.value?.let{
             when(it){

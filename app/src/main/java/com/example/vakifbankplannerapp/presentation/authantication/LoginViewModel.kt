@@ -2,6 +2,8 @@ package com.example.vakifbankplannerapp.presentation.authantication
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -25,9 +27,12 @@ class LoginViewModel@Inject constructor(
     private val _loginFlow = MutableStateFlow<Resource<Login>?>(null)
     val loginFlow: StateFlow<Resource<Login>?> = _loginFlow
 
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState: StateFlow<Boolean> = _loadingState
 
     fun checkLogin(navController: NavController,context: Context, login : Login ){
         viewModelScope.launch {
+            _loadingState.value = true
             val result = repoLogin.loginCheck(login)
 
             when(result){
@@ -46,13 +51,12 @@ class LoginViewModel@Inject constructor(
                         Toast.makeText(context, "There is a error at server", Toast.LENGTH_LONG).show()
 
                     }
+                    _loadingState.value = false
                 }
                 is Resource.Error->{
                     Toast.makeText(context, "Please check your sicil number and password, then try again ", Toast.LENGTH_LONG).show()
                 }
-                is Resource.Loading->{
-
-                }
+               else -> Unit
             }
 
         }

@@ -2,6 +2,7 @@ package com.example.vakifbankplannerapp.presentation.addEvent
 
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,6 +69,8 @@ fun NewMeetingScreen(
 
     val meetingDataList : MutableList<AddMeetingItem> = remember { mutableStateListOf<AddMeetingItem>() }
 
+    val context = LocalContext.current
+
     var teamNameValue by remember { mutableStateOf("") }
     var meetingTypeValue by remember { mutableStateOf("") }
     var meetingDateValue by remember { mutableStateOf("") }
@@ -74,6 +78,16 @@ fun NewMeetingScreen(
     var meetingContentValue by remember { mutableStateOf("") }
     var meetingNotesValue by remember { mutableStateOf("") }
 
+
+
+    fun isMeetingDataValid(): Boolean {
+        return teamNameValue.isNotBlank()
+                && meetingTypeValue.isNotBlank()
+                && meetingDateValue.isNotBlank()
+                && meetingTimeValue.isNotBlank()
+                && meetingContentValue.isNotBlank()
+                && meetingNotesValue.isNotBlank()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -159,36 +173,43 @@ fun NewMeetingScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             //Save Button
-            MeetingButton(navController){
+            MeetingButton(navController, isMeetingDataValid()){
 
-                val newMeetingData = AddMeetingItem(
-                    teamName = teamNameValue,
-                    meetingName = meetingTypeValue,
-                    meetingDate = createDateTimeFormatter(meetingDateValue, meetingTimeValue),
-                    meetingTime =  createDateTimeFormatter(meetingDateValue, meetingTimeValue),
-                    meetingContext = meetingContentValue,
-                    meetingContent = meetingNotesValue
-                )
 
-                // Add the newMeetingData object to the list
-                meetingDataList.add(newMeetingData)
+                if(isMeetingDataValid()){
+                    val newMeetingData = AddMeetingItem(
+                        teamName = teamNameValue,
+                        meetingName = meetingTypeValue,
+                        meetingDate = createDateTimeFormatter(meetingDateValue, meetingTimeValue),
+                        meetingTime =  createDateTimeFormatter(meetingDateValue, meetingTimeValue),
+                        meetingContext = meetingContentValue,
+                        meetingContent = meetingNotesValue
+                    )
+                    // Add the newMeetingData object to the list
+                    meetingDataList.add(newMeetingData)
 
-                CoroutineScope(Dispatchers.IO).launch{
+                    CoroutineScope(Dispatchers.IO).launch{
 
-                    newMeetingViewModel.sendMeetingItems(newMeetingData)
+                        newMeetingViewModel.sendMeetingItems(newMeetingData)
+                    }
+
+                    // Clear the text field values
+                    teamNameValue = ""
+                    meetingTypeValue = ""
+                    meetingDateValue = ""
+                    meetingTimeValue = ""
+                    meetingContentValue = ""
+                    meetingNotesValue = ""
+
+                    navController.navigate(Graph.HOME){
+                        popUpTo(FeatureScreens.NewMeetingScreen.route){inclusive = true}
+                    }
+                }else {
+                    Toast.makeText(context, "You need to make sure all the fields are filled", Toast.LENGTH_LONG).show()
                 }
 
-                // Clear the text field values
-                teamNameValue = ""
-                meetingTypeValue = ""
-                meetingDateValue = ""
-                meetingTimeValue = ""
-                meetingContentValue = ""
-                meetingNotesValue = ""
 
-                navController.navigate(Graph.HOME){
-                    popUpTo(FeatureScreens.NewMeetingScreen.route){inclusive = true}
-                }
+
             }
         }
     }
@@ -215,17 +236,23 @@ fun createDateTimeFormatter(
 @Composable
 fun MeetingButton(
     navController: NavController,
-    onClick: () -> Unit
+    meetingDataIsValid: Boolean,
+    onSaveClick: () -> Unit
 ) {
     Button(
-        onClick = { onClick() },
+        onClick = {
+                  if(meetingDataIsValid){
+                   onSaveClick()
+                  }
+        },
         modifier = Modifier//.size(width = 60.dp, height = 30.dp)
             .size(width = 170.dp, height = 60.dp)
             .shadow(2.dp),
         colors = ButtonDefaults.buttonColors(
             Color(0xFF4E4F50),
             contentColor = Color(0xFFE2DED0)
-        )
+        ),
+        enabled = meetingDataIsValid
     ) {
         Text(text = "SAVE MEETING", modifier = Modifier.padding(vertical = 8.dp))
     }
@@ -375,7 +402,8 @@ fun DateTimePicker(
             is24HourFormat = true
         ),
         selection = ClockSelection.HoursMinutes{ hours, minutes ->
-            clockValue = "$hours:$minutes"
+            val formattedClock = String.format("%02d:%02d", hours, minutes)
+            clockValue = formattedClock
             onValueChangeForTime(clockValue)
         })
 
