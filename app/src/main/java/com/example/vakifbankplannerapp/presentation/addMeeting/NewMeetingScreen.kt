@@ -187,7 +187,6 @@ fun NewMeetingScreen(
                     meetingDataList.add(newMeetingData)
 
                     CoroutineScope(Dispatchers.IO).launch{
-
                         newMeetingViewModel.sendMeetingItems(newMeetingData)
                     }
 
@@ -212,50 +211,7 @@ fun NewMeetingScreen(
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
-fun createDateTimeFormatter(
-    meetingDateValue: String,
-    meetingTimeValue: String
-): String {
 
-    val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
-    val date: LocalDate = LocalDate.parse(meetingDateValue, dateFormatter)
-    val time: LocalTime = LocalTime.parse(meetingTimeValue, timeFormatter)
-
-    val dateTime: LocalDateTime = date.atTime(time)
-
-    val outputFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-
-    return dateTime.format(outputFormatter)
-}
-
-@Composable
-fun MeetingButton(
-    navController: NavController,
-    meetingDataIsValid: Boolean,
-    onSaveClick: () -> Unit
-) {
-    Button(
-        onClick = {
-                  if(meetingDataIsValid){
-                   onSaveClick()
-                  }
-        },
-        modifier = Modifier//.size(width = 60.dp, height = 30.dp)
-            .size(width = 170.dp, height = 60.dp)
-            .shadow(2.dp),
-        colors = ButtonDefaults.buttonColors(
-            Color(0xFF4E4F50),
-            contentColor = Color(0xFFE2DED0)
-        ),
-        enabled = meetingDataIsValid
-    ) {
-        Text(text = "SAVE MEETING", modifier = Modifier.padding(vertical = 8.dp))
-    }
-
-}
 @Composable
 fun TextFieldForMeeting(
     label : String,
@@ -277,7 +233,7 @@ fun TextFieldForMeeting(
             .padding(8.dp)
             .shadow(1.dp)
             .focusRequester(focusRequester = FocusRequester()),
-       // leadingIcon = { Icon(imageVector = InputType.UserName.icon, contentDescription = null) },
+        // leadingIcon = { Icon(imageVector = InputType.UserName.icon, contentDescription = null) },
         label = { Text(text = label) },
         //shape = Shapes.small,
         shape = Shapes.medium,
@@ -291,6 +247,230 @@ fun TextFieldForMeeting(
         visualTransformation = inputType.visualTransformation,
         //shape = RoundedCornerShape(12.dp)
     )
+}
+
+@Composable
+fun MeetingButton(
+    navController: NavController,
+    meetingDataIsValid: Boolean,
+    onSaveClick: () -> Unit
+) {
+    Button(
+        onClick = {
+            if(meetingDataIsValid){
+                onSaveClick()
+            }
+        },
+        modifier = Modifier//.size(width = 60.dp, height = 30.dp)
+            .size(width = 170.dp, height = 60.dp)
+            .shadow(2.dp),
+        colors = ButtonDefaults.buttonColors(
+            Color(0xFF4E4F50),
+            contentColor = Color(0xFFE2DED0)
+        ),
+        enabled = meetingDataIsValid
+    ) {
+        Text(text = "SAVE MEETING", modifier = Modifier.padding(vertical = 8.dp))
+    }
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun createDateTimeFormatter(
+    meetingDateValue: String,
+    meetingTimeValue: String
+): String {
+
+    val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    val date: LocalDate = LocalDate.parse(meetingDateValue, dateFormatter)
+    val time: LocalTime = LocalTime.parse(meetingTimeValue, timeFormatter)
+
+    val dateTime: LocalDateTime = date.atTime(time)
+
+    val outputFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+    return dateTime.format(outputFormatter)
+}
+
+
+@Composable
+fun DateTimePicker(
+    onValueChangeForDate: (String) -> Unit,
+    onValueChangeForTime: (String) -> Unit
+) {
+    var calenderValue by remember{ mutableStateOf("") }
+    var clockValue by remember{ mutableStateOf("") }
+
+    val calenderState = rememberSheetState()
+    val clockState = rememberSheetState()
+
+    CalendarDialog(
+        state = calenderState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true,
+            style = CalendarStyle.MONTH,
+            //disabledDates = listOf(LocalDate.now().plusDays(7))
+        ),
+        selection = CalendarSelection.Date{date ->
+            calenderValue = date.toString()
+            onValueChangeForDate(calenderValue)
+        })
+    ClockDialog(
+        state = clockState,
+        config = ClockConfig(
+            is24HourFormat = true
+        ),
+        selection = ClockSelection.HoursMinutes{ hours, minutes ->
+            val formattedClock = String.format("%02d:%02d", hours, minutes)
+            clockValue = formattedClock
+            onValueChangeForTime(clockValue)
+        })
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+        TextField(
+            value = calenderValue,
+            onValueChange = {calenderValue = it
+                //onValueChangeForDate(it)
+            },
+            readOnly = true,
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+                .shadow(1.dp)
+                .clickable {
+                    calenderState.show()
+                }
+                .focusRequester(focusRequester = FocusRequester()),
+            label = { Text(text = "Meeting Date") },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            trailingIcon = {
+                IconButton(onClick = {
+                    calenderState.show()
+                }) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(R.drawable.calendar),
+                        contentDescription = null,
+
+                        )
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        TextField(
+            value = clockValue,
+            onValueChange = {clockValue = it
+                //onValueChangeForDate(it)
+            },
+            readOnly = true,
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+                .shadow(1.dp)
+                .clickable {
+                    clockState.show()
+                }
+                .focusRequester(focusRequester = FocusRequester()),
+            label = { Text(text = "Meeting Time") },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            trailingIcon = {
+                IconButton(onClick = {
+                    clockState.show()
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.time),
+                        contentDescription = null,
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun DropDownMenuForTeams(
+    onValueChange: (String) -> Unit
+) {
+
+    var mExpanded by remember{ mutableStateOf(false) }
+    val mTeams = listOf(
+        "Platinium",
+        "Rocket",
+        "Storm",
+        "Doremigos",
+        "Mobil",
+        "Orion"
+    )
+
+    var mSelectedText by remember{ mutableStateOf("") }
+
+    var mTextFieldSize by remember{ mutableStateOf(Size.Zero) }
+
+    val icon = if(mExpanded) Icons.Default.KeyboardArrowUp
+    else Icons.Default.KeyboardArrowDown
+
+    Column() {
+        OutlinedTextField(
+            value = mSelectedText,
+            onValueChange = {mSelectedText = it
+                //onValueChange(it)
+            },
+            readOnly = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .onGloballyPositioned { coordinates ->
+                    mTextFieldSize = coordinates.size.toSize()
+                },
+            label = { Text(text = "Team")},
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            trailingIcon = {
+                Icon(icon,"contentDescription",
+                    Modifier.clickable { mExpanded = !mExpanded })
+            }
+        )
+
+        DropdownMenu(
+            expanded = mExpanded,
+            onDismissRequest = { mExpanded = false },
+            modifier = Modifier.width(with(LocalDensity.current){mTextFieldSize.width.toDp()})
+        ) {
+            mTeams.forEach {label ->
+                DropdownMenuItem(onClick = {
+                    mSelectedText = label
+                    onValueChange(label)
+                    mExpanded = false
+
+                }) {
+                    Text(text = label)
+                }
+            }
+        }
+
+    }
 }
 
 
@@ -371,184 +551,5 @@ fun ClockTimePicker(clockState : SheetState) {
         clockState.show()
 }
 
-@Composable
-fun DateTimePicker(
-    onValueChangeForDate: (String) -> Unit,
-    onValueChangeForTime: (String) -> Unit
-) {
-    var calenderValue by remember{ mutableStateOf("") }
-    var clockValue by remember{ mutableStateOf("") }
-
-    val calenderState = rememberSheetState()
-    val clockState = rememberSheetState()
-
-    CalendarDialog(
-        state = calenderState,
-        config = CalendarConfig(
-            monthSelection = true,
-            yearSelection = true,
-            style = CalendarStyle.MONTH,
-            //disabledDates = listOf(LocalDate.now().plusDays(7))
-        ),
-        selection = CalendarSelection.Date{date ->
-            calenderValue = date.toString()
-            onValueChangeForDate(calenderValue)
-        })
-    ClockDialog(
-        state = clockState,
-        config = ClockConfig(
-            is24HourFormat = true
-        ),
-        selection = ClockSelection.HoursMinutes{ hours, minutes ->
-            val formattedClock = String.format("%02d:%02d", hours, minutes)
-            clockValue = formattedClock
-            onValueChangeForTime(clockValue)
-        })
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-
-        TextField(
-            value = calenderValue,
-            onValueChange = {calenderValue = it
-                //onValueChangeForDate(it)
-                            },
-            readOnly = true,
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-                .shadow(1.dp)
-                .clickable {
-                    calenderState.show()
-                }
-                .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Date") },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            trailingIcon = {
-                IconButton(onClick = {
-                    calenderState.show()
-                }) {
-                    Icon(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.calendar),
-                        contentDescription = null,
-
-                    )
-                }
-            }
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        TextField(
-            value = clockValue,
-            onValueChange = {clockValue = it
-                //onValueChangeForDate(it)
-                            },
-            readOnly = true,
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-                .shadow(1.dp)
-                .clickable {
-                    clockState.show()
-                }
-                .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Time") },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            trailingIcon = {
-                IconButton(onClick = {
-                    clockState.show()
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.time),
-                        contentDescription = null,
-                    )
-                }
-            }
-        )
-    }
-}
-
-@Composable
-fun DropDownMenuForTeams(
-    onValueChange: (String) -> Unit
-) {
-
-    var mExpanded by remember{ mutableStateOf(false) }
-    val mTeams = listOf(
-        "Platinium",
-        "Rocket",
-        "Storm",
-        "Doremigos",
-        "Mobil",
-        "Orion"
-    )
-
-    var mSelectedText by remember{ mutableStateOf("") }
-
-    var mTextFieldSize by remember{ mutableStateOf(Size.Zero) }
-
-    val icon = if(mExpanded) Icons.Default.KeyboardArrowUp
-    else Icons.Default.KeyboardArrowDown
-
-    Column() {
-        OutlinedTextField(
-            value = mSelectedText,
-            onValueChange = {mSelectedText = it
-                //onValueChange(it)
-                            },
-            readOnly = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .onGloballyPositioned { coordinates ->
-                    mTextFieldSize = coordinates.size.toSize()
-                },
-            label = { Text(text = "Team")},
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            trailingIcon = {
-                Icon(icon,"contentDescription",
-                    Modifier.clickable { mExpanded = !mExpanded })
-            }
-        )
-
-        DropdownMenu(
-            expanded = mExpanded,
-            onDismissRequest = { mExpanded = false },
-            modifier = Modifier.width(with(LocalDensity.current){mTextFieldSize.width.toDp()})
-        ) {
-            mTeams.forEach {label ->
-                DropdownMenuItem(onClick = {
-                    mSelectedText = label
-                    onValueChange(label)
-                    mExpanded = false
-
-                }) {
-                    Text(text = label)
-                }
-            }
-        }
-
-    }
-
-
-}
 
 

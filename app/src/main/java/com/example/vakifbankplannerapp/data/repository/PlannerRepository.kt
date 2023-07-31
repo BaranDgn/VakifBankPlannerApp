@@ -67,4 +67,27 @@ class PlannerRepository @Inject constructor(
         }
         return Resource.Success(response)
     }
+
+    suspend fun addEvent(addEventItem: AddEventItem){
+        try {
+            api.addEvent(addEventItem)
+        }catch (e: java.lang.Exception){
+            println(e.message)
+        }
+    }
+
+    suspend fun updateEvent(updateEvent: UpdateEvent){
+        try{
+            api.UpdateEvent(updateEvent)
+        }catch (e: java.lang.Exception){
+            println(e.message)
+        }
+    }
+    suspend fun deleteEvent(deleteEvent: DeleteEvent){
+        try {
+            api.deleteEvent(deleteEvent)
+        }catch (e: java.lang.Exception){
+            println(e.message)
+        }
+    }
 }
