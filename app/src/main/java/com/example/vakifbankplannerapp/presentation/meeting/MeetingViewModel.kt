@@ -44,21 +44,20 @@ class MeetingViewModel@Inject constructor(
     val isLoading = _isLoading.asStateFlow()
 
     var meetingList = mutableStateOf<List<Meeting>>(listOf())
-    //var errorMessage = mutableStateOf("")
-    //var isLoadingForMeeting = mutableStateOf(false)
 
 
-    init{
-       // laodMeetings2()
-    }
-
+    //Fetch Meetings
     suspend fun loadMeetings() : Resource<MeetingItem>{
         return repo.getMeeting()
     }
 
+    //Delete Meeting
     suspend fun deleteMeeting(deleteItem: DeleteItem){
         repo.deleteMeetingRepo(deleteMeeting = deleteItem)
     }
+
+
+    //Search
     private var isSearchStarting = true
     private var initialMeetingList = listOf<Meeting>()
     fun searchBasedOnTeamName(query : String){
@@ -118,6 +117,8 @@ class MeetingViewModel@Inject constructor(
     }
     */
 
+
+    //Refresh
     fun loadStuff(){
         viewModelScope.launch {
             _isLoading.value = true

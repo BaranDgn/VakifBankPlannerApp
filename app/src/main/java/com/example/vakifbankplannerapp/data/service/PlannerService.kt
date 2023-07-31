@@ -21,6 +21,9 @@ interface PlannerService {
     @POST("/Meeting/DeleteMeeting")
     suspend fun deleteMeeting(@Body deleteMeetingItem : DeleteItem)
 
+    @POST("/Meeting/UpdateMeeting")
+    suspend fun updateMeeting(@Body updateMeeting: UpdateMeeting)
+
     //Events
     @POST("api/Event/GetEvent")
     suspend fun getEvents() : Event
@@ -28,5 +31,6 @@ interface PlannerService {
     //Birthdays
     @POST("BDay/GetAllBDay")
     suspend fun getBirthday() : Birthday
+
 
 }
