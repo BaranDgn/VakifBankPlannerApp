@@ -1,4 +1,4 @@
-package com.example.vakifbankplannerapp.pastEvent
+package com.example.vakifbankplannerapp.presentation.pastEvent
 
 import android.os.Build
 import androidx.annotation.RequiresApi
