@@ -1,6 +1,9 @@
 package com.example.vakifbankplannerapp.presentation.addEvent
 
 
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +22,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,9 +32,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.vakifbankplannerapp.R
+import com.example.vakifbankplannerapp.data.model.AddMeetingItem
+import com.example.vakifbankplannerapp.presentation.addMeeting.NewMeetingViewModel
+import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
+import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
 import com.example.vakifbankplannerapp.ui.theme.Shapes
 import com.maxkeppeker.sheets.core.models.base.SheetState
@@ -42,12 +51,43 @@ import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NewMeetingScreen(navController: NavHostController) {
+fun NewMeetingScreen(
+    navController: NavHostController,
+    newMeetingViewModel: NewMeetingViewModel = hiltViewModel()
+) {
 
+    val meetingDataList : MutableList<AddMeetingItem> = remember { mutableStateListOf<AddMeetingItem>() }
+
+    val context = LocalContext.current
+
+    var teamNameValue by remember { mutableStateOf("") }
+    var meetingTypeValue by remember { mutableStateOf("") }
+    var meetingDateValue by remember { mutableStateOf("") }
+    var meetingTimeValue by remember { mutableStateOf("") }
+    var meetingContentValue by remember { mutableStateOf("") }
+    var meetingNotesValue by remember { mutableStateOf("") }
+
+
+
+    fun isMeetingDataValid(): Boolean {
+        return teamNameValue.isNotBlank()
+                && meetingTypeValue.isNotBlank()
+                && meetingDateValue.isNotBlank()
+                && meetingTimeValue.isNotBlank()
+                && meetingContentValue.isNotBlank()
+                && meetingNotesValue.isNotBlank()
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,60 +129,130 @@ fun NewMeetingScreen(navController: NavHostController) {
             }
         }
     ){
-        //val meetingDateState = rememberSaveable { mutableStateOf(Calendar.getInstance()) }
-        //val timePickerState = rememberSaveable { mutableStateOf(Calendar.getInstance()) }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xfff2f2f2))
-                .padding(it).padding(8.dp)
+                .padding(it)
+                .padding(8.dp)
         ) {
 
-          //  TextFieldForMeeting(label = "Team Name", inputType = InputTypeForAddingMeeting.TeamName)
-            DropDownMenuForTeams()
-            TextFieldForMeeting(label = "Meeting Type", inputType = InputTypeForAddingMeeting.MeetingType)
-           // TextFieldForMeeting(label = "Meeting Date", inputType = InputTypeForAddingMeeting.MeetingDate)
+            //Team Name
+            DropDownMenuForTeams(onValueChange = {teamNameValue = it})
 
-            //CalendarTextFieldForMeeting(label = "Meeting Date", inputType = InputTypeForAddingMeeting.MeetingDate, navigationIcon = { DateTimePickerScreen() })
-           // ClockTextFieldForMeeting(label = "Meeting Time", inputType = InputTypeForAddingMeeting.MeetingTime, navigationIcon = { ClockTimePicker() })
+            //Meeting Type
+            TextFieldForMeeting(
+                label = "Meeting Type",
+                inputType = InputTypeForAddingMeeting.MeetingType,
+                onValueChange =  { meetingTypeValue = it })
 
-            DateTimePicker()
+            //Meeting Data and Time
+            DateTimePicker(
+                onValueChangeForDate = {meetingDateValue = it},
+                onValueChangeForTime = {meetingTimeValue = it}
+            )
 
+            //Meeting Content
           TextFieldForMeeting(
                 label = "Meeting Content",
                 inputType = InputTypeForAddingMeeting.MeetingContent,
                 multiline = true,
-                modifier = Modifier.height(120.dp) // Adjust the height as needed
+                modifier = Modifier.height(120.dp),
+              onValueChange = { meetingContentValue = it  } // Adjust the height as needed
             )
+            //Meeting Notes
             TextFieldForMeeting(
                 label = "Meeting Notes",
                 inputType = InputTypeForAddingMeeting.MeetingNotes,
                 multiline = true,
-                modifier = Modifier.height(120.dp) // Adjust the height as needed
+                modifier = Modifier.height(120.dp),
+                onValueChange = { meetingNotesValue = it  } // Adjust the height as needed
             )
             Spacer(modifier = Modifier.height(32.dp))
-            MeetingButton(navController)
+
+            //Save Button
+            MeetingButton(navController, isMeetingDataValid()){
+
+
+                if(isMeetingDataValid()){
+                    val newMeetingData = AddMeetingItem(
+                        teamName = teamNameValue,
+                        meetingName = meetingTypeValue,
+                        meetingDate = createDateTimeFormatter(meetingDateValue, meetingTimeValue),
+                        meetingTime =  createDateTimeFormatter(meetingDateValue, meetingTimeValue),
+                        meetingContext = meetingContentValue,
+                        meetingContent = meetingNotesValue
+                    )
+                    // Add the newMeetingData object to the list
+                    meetingDataList.add(newMeetingData)
+
+                    CoroutineScope(Dispatchers.IO).launch{
+
+                        newMeetingViewModel.sendMeetingItems(newMeetingData)
+                    }
+
+                    // Clear the text field values
+                    teamNameValue = ""
+                    meetingTypeValue = ""
+                    meetingDateValue = ""
+                    meetingTimeValue = ""
+                    meetingContentValue = ""
+                    meetingNotesValue = ""
+
+                    navController.navigate(Graph.HOME){
+                        popUpTo(FeatureScreens.NewMeetingScreen.route){inclusive = true}
+                    }
+                }else {
+                    Toast.makeText(context, "You need to make sure all the fields are filled", Toast.LENGTH_LONG).show()
+                }
+
+
+
+            }
         }
     }
-
 }
+@RequiresApi(Build.VERSION_CODES.O)
+fun createDateTimeFormatter(
+    meetingDateValue: String,
+    meetingTimeValue: String
+): String {
 
+    val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    val date: LocalDate = LocalDate.parse(meetingDateValue, dateFormatter)
+    val time: LocalTime = LocalTime.parse(meetingTimeValue, timeFormatter)
+
+    val dateTime: LocalDateTime = date.atTime(time)
+
+    val outputFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+    return dateTime.format(outputFormatter)
+}
 
 @Composable
 fun MeetingButton(
-    navController: NavController
+    navController: NavController,
+    meetingDataIsValid: Boolean,
+    onSaveClick: () -> Unit
 ) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = {
+                  if(meetingDataIsValid){
+                   onSaveClick()
+                  }
+        },
         modifier = Modifier//.size(width = 60.dp, height = 30.dp)
             .size(width = 170.dp, height = 60.dp)
             .shadow(2.dp),
         colors = ButtonDefaults.buttonColors(
             Color(0xFF4E4F50),
             contentColor = Color(0xFFE2DED0)
-        )
+        ),
+        enabled = meetingDataIsValid
     ) {
         Text(text = "SAVE MEETING", modifier = Modifier.padding(vertical = 8.dp))
     }
@@ -154,6 +264,7 @@ fun TextFieldForMeeting(
     inputType : InputTypeForAddingMeeting,
     multiline: Boolean = false,
     modifier: Modifier = Modifier,
+    onValueChange : (String) -> Unit
 
 ) {
 
@@ -161,7 +272,8 @@ fun TextFieldForMeeting(
 
     TextField(
         value = fieldValue,
-        onValueChange = {fieldValue = it },
+        onValueChange = {fieldValue = it
+            onValueChange(it)},
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
@@ -180,9 +292,6 @@ fun TextFieldForMeeting(
         keyboardOptions = inputType.keyboardOptions,
         visualTransformation = inputType.visualTransformation,
         //shape = RoundedCornerShape(12.dp)
-
-
-
     )
 }
 
@@ -266,6 +375,8 @@ fun ClockTimePicker(clockState : SheetState) {
 
 @Composable
 fun DateTimePicker(
+    onValueChangeForDate: (String) -> Unit,
+    onValueChangeForTime: (String) -> Unit
 ) {
     var calenderValue by remember{ mutableStateOf("") }
     var clockValue by remember{ mutableStateOf("") }
@@ -283,6 +394,7 @@ fun DateTimePicker(
         ),
         selection = CalendarSelection.Date{date ->
             calenderValue = date.toString()
+            onValueChangeForDate(calenderValue)
         })
     ClockDialog(
         state = clockState,
@@ -290,7 +402,9 @@ fun DateTimePicker(
             is24HourFormat = true
         ),
         selection = ClockSelection.HoursMinutes{ hours, minutes ->
-            clockValue = "$hours:$minutes"
+            val formattedClock = String.format("%02d:%02d", hours, minutes)
+            clockValue = formattedClock
+            onValueChangeForTime(clockValue)
         })
 
     Row(
@@ -300,7 +414,9 @@ fun DateTimePicker(
 
         TextField(
             value = calenderValue,
-            onValueChange = {calenderValue = it},
+            onValueChange = {calenderValue = it
+                //onValueChangeForDate(it)
+                            },
             readOnly = true,
             modifier = Modifier
                 .weight(1f)
@@ -334,7 +450,9 @@ fun DateTimePicker(
 
         TextField(
             value = clockValue,
-            onValueChange = {clockValue = it},
+            onValueChange = {clockValue = it
+                //onValueChangeForDate(it)
+                            },
             readOnly = true,
             modifier = Modifier
                 .weight(1f)
@@ -367,7 +485,7 @@ fun DateTimePicker(
 
 @Composable
 fun DropDownMenuForTeams(
-
+    onValueChange: (String) -> Unit
 ) {
 
     var mExpanded by remember{ mutableStateOf(false) }
@@ -390,10 +508,13 @@ fun DropDownMenuForTeams(
     Column() {
         OutlinedTextField(
             value = mSelectedText,
-            onValueChange = {mSelectedText = it},
+            onValueChange = {mSelectedText = it
+                //onValueChange(it)
+                            },
             readOnly = true,
             modifier = Modifier
-                .fillMaxWidth().padding(8.dp)
+                .fillMaxWidth()
+                .padding(8.dp)
                 .onGloballyPositioned { coordinates ->
                     mTextFieldSize = coordinates.size.toSize()
                 },
@@ -418,7 +539,9 @@ fun DropDownMenuForTeams(
             mTeams.forEach {label ->
                 DropdownMenuItem(onClick = {
                     mSelectedText = label
+                    onValueChange(label)
                     mExpanded = false
+
                 }) {
                     Text(text = label)
                 }

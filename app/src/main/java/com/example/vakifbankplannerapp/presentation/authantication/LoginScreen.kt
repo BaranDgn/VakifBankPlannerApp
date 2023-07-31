@@ -1,5 +1,6 @@
 package com.example.vakifbankplannerapp.presentation.authantication
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,18 +20,16 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import com.example.vakifbankplannerapp.R.drawable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
-import com.example.vakifbankplannerapp.presentation.navigation.Graph
+import com.example.vakifbankplannerapp.data.model.Login
+import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.ui.theme.Shapes
 
 @Composable
@@ -38,24 +37,18 @@ fun LoginScreen(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
-
-   // val context = LocalContext.current
+    //Observing the loading from viewModel
+    val authResource = loginViewModel.loginFlow.collectAsState()
+    val isLoading by loginViewModel.loadingState.collectAsState()
+    val context = LocalContext.current
 
     val passwordFocusRequester = FocusRequester()
     val focusManager : FocusManager = LocalFocusManager.current
 
-    var sicil: String by remember{ mutableStateOf("") }
-    var password: String by remember{ mutableStateOf("") }
-
-    var sicilNumber by remember{
-        loginViewModel.sicil
-    }
-
-    var passwordForLogin by remember{
-        loginViewModel.password
-    }
-
     var passwordVisibility by remember { mutableStateOf(false) }
+
+    val sicilNumberState = remember { mutableStateOf(TextFieldValue()) }
+    val passwordState = remember { mutableStateOf(TextFieldValue()) }
 
     Box(
         modifier = Modifier
@@ -63,11 +56,8 @@ fun LoginScreen(
             .background(Color(0xffFFAE42)), //Color(0xffFBFCF8)
         contentAlignment = Alignment.Center
     ){
-
-
         Column(
             modifier = Modifier
-
                 .padding(24.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.CenterVertically),
@@ -82,11 +72,10 @@ fun LoginScreen(
                     //.shadow(5.dp)
             )
 
-
             //Sicil Number
             TextField(
-                value = sicil,
-                onValueChange = {sicil = it},
+                value = sicilNumberState.value,
+                onValueChange = {sicilNumberState.value = it},
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(1.dp, RoundedCornerShape(15.dp))
@@ -108,17 +97,15 @@ fun LoginScreen(
             )
 
             //Password
-
             TextField(
-                value = password,
-                onValueChange = {password = it},
+                value = passwordState.value,
+                onValueChange = {passwordState.value = it},
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(1.dp, RoundedCornerShape(15.dp))
                     .focusRequester(focusRequester = passwordFocusRequester),
                 leadingIcon = { Icon(imageVector = InputType.Password.icon, contentDescription = null)},
                 label = { Text(text = InputType.Password.label) },
-                //shape = Shapes.small,
                 shape = Shapes.medium,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
@@ -139,21 +126,27 @@ fun LoginScreen(
                     }
                 }
             )
-
-            passwordForLogin = password
-            sicilNumber = sicil
             //Button
             Button(
                 onClick = {
-                   // viewModel.logInUser(email, password)
-                    //  onClick()
+                    val sicilText = sicilNumberState.value.text.trim()
+                    val passwordText = passwordState.value.text
 
-                        //loginViewModel.checkIfUserLogin(sicilNumber.toInt(), passwordForLogin)
-                          navController.navigate(Graph.HOME){
-                              popUpTo(AuthScreen.Login.route){inclusive = true}
+                    if (sicilText.isEmpty() || passwordText.isEmpty()) {
+                        Toast.makeText(context, "Please enter both Sicil Number and password.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        try {
+                            val username = sicilText.toIntOrNull()
+                            val password = passwordText
 
-                              //navController.popBackStack()
-                          }
+                            val login = username?.let { Login(it, password) }
+                            if (login != null) {
+                                loginViewModel.checkLogin(navController, context, login)
+                            }
+                        } catch (e: NumberFormatException) {
+                            Toast.makeText(context, "Invalid input. Please enter valid numbers.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -166,9 +159,24 @@ fun LoginScreen(
                 Text(text = "GİRİŞ YAP", modifier = Modifier.padding(vertical = 8.dp))
             }
 
+           // Spacer(modifier = Modifier.height(64.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp).padding(top=80.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.DarkGray, modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+
+
         }
-        /*
-        authResource?.value?.let{
+
+
+        authResource.value?.let{
             when(it){
                 is Resource.Error -> {
                     Toast.makeText(context,"Email or password might be wrong or cannot be empty", Toast.LENGTH_SHORT).show()
@@ -179,20 +187,14 @@ fun LoginScreen(
                 }
                 is Resource.Success -> {
                     LaunchedEffect("",Unit){
-                        Toast.makeText(context,"Welcome to Psiko App", Toast.LENGTH_SHORT).show()
-                        navController.navigate(Graph.HOME){
-                            popUpTo(AuthScreen.Login.route){inclusive = true}
-
-                            //navController.popBackStack()
+                        Toast.makeText(context,"Welcome to VakıfBank Planner App", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
-        }
-
-        */
     }
 }
+
 sealed class InputType(
     val label: String,
     val icon: ImageVector,

@@ -1,35 +1,30 @@
 package com.example.vakifbankplannerapp.presentation.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.vakifbankplannerapp.data.model.Events
-import com.example.vakifbankplannerapp.data.model.Teams
-import okhttp3.internal.wait
+import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EventCardView(
-    //EventList : List<Events>,
-    eventName : String,
-    eventTeam: String,
-    eventDate : String,
-    eventClock: String,
-    eventContent : String,
-    eventNotes: String,
+     eventName: String,
+     eventType: String,
+     eventDateTime: String,
+     eventHour : String,
+     meetingNotes: String,
     navController: NavController
 ) {
 
@@ -37,10 +32,13 @@ fun EventCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable {},
+       ,
         shape = RoundedCornerShape(8.dp),
-        elevation = 5.dp
+        elevation = 5.dp,
+        backgroundColor = Color.White// Set the card's background color here
     ) {
+
+
         Column(modifier = Modifier
             .height(160.dp)
             .background(
@@ -73,25 +71,17 @@ fun EventCardView(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = eventTeam,
+                            text = eventType,
                             style = TextStyle(color = Color.Black, fontSize = 19.sp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Event Content: ",
-                            style = TextStyle(color = Color.Black, fontSize = 14.sp)
-                        )
-                        Text(
-                            text = eventContent,
-                            style = TextStyle(color = Color.Black, fontSize = 17.sp)
-                        )
+
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Event Notes: ",
                             style = TextStyle(color = Color.Black, fontSize = 14.sp)
                         )
                         Text(
-                            text = eventNotes,
+                            text = meetingNotes,
                             style = TextStyle(color = Color.Black, fontSize = 17.sp)
                         )
                     }
@@ -105,11 +95,11 @@ fun EventCardView(
                     ) {
 
                         Text(
-                            text = eventDate,
+                            text = eventDateTime,
                             style = TextStyle(color = Color.Black, fontSize = 18.sp)
                         )
                         Text(
-                            text = eventClock,
+                            text = eventHour,
                             style = TextStyle(color = Color.Black, fontSize = 18.sp)
                         )
 
@@ -120,6 +110,7 @@ fun EventCardView(
         }
     }
 }
+
 
 
 

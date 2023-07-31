@@ -1,5 +1,7 @@
 package com.example.vakifbankplannerapp.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -14,6 +16,7 @@ import com.example.vakifbankplannerapp.presentation.event.EventScreen
 import com.example.vakifbankplannerapp.presentation.meeting.MeetingScreen
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeNavGraph(navHostController: NavHostController){
 
@@ -24,7 +27,7 @@ fun HomeNavGraph(navHostController: NavHostController){
     ) {
 
         composable(route = BottomBarScreen.Meeting.route){
-            MeetingScreen(navHostController)
+            MeetingScreen(navController= navHostController)
         }
         composable(route = BottomBarScreen.Event.route){
             EventScreen(navHostController)
@@ -38,6 +41,7 @@ fun HomeNavGraph(navHostController: NavHostController){
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.featureNavGraph(
     navHostController: NavHostController
 

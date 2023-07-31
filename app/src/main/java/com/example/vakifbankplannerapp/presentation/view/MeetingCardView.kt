@@ -2,10 +2,8 @@ package com.example.vakifbankplannerapp.presentation.view
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +17,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.LinearGradient
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -27,7 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.vakifbankplannerapp.data.model.Teams
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -39,7 +35,7 @@ fun MeetingCardView(
     meetingClock: String,
     meetingContent: String,
     meetingNotes: String,
-    navController: NavController
+    navController: NavController,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var hasMore by remember { mutableStateOf(false) }

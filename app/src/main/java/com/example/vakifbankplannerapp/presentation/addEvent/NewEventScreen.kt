@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.vakifbankplannerapp.R
+import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
+import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
+import com.example.vakifbankplannerapp.presentation.navigation.HomeNavGraph
 import com.example.vakifbankplannerapp.ui.theme.Shapes
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -84,7 +87,8 @@ fun NewEventScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xfff2f2f2))
-                .padding(it).padding(8.dp),
+                .padding(it)
+                .padding(8.dp),
         ) {
 
             //  TextFieldForMeeting(label = "Team Name", inputType = InputTypeForAddingMeeting.TeamName)
@@ -146,7 +150,12 @@ fun EventButton(
     navController: NavController
 ) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = {
+
+            navController.navigate(BottomBarScreen.Event.route){
+                popUpTo(FeatureScreens.NewEventScreen.route){inclusive = true}
+            }
+        },
         modifier = Modifier//.size(width = 60.dp, height = 30.dp)
             .size(width = 170.dp, height = 60.dp)
             .shadow(2.dp),
