@@ -25,5 +25,8 @@ interface PlannerService {
     @POST("api/Event/GetEvent")
     suspend fun getEvents() : Event
 
+    //Birthdays
+    @POST("BDay/GetAllBDay")
+    suspend fun getBirthday() : Birthday
 
 }
