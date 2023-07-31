@@ -20,10 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
@@ -79,18 +81,42 @@ fun MeetingScreen(
         },
 
        floatingActionButton = {
-           ExtendedFloatingActionButton(
-                text = { Text("") },
-                backgroundColor = Color(0xffFFAE42),
-                icon = {Icon(Icons.Filled.Add, contentDescription = "")},
-                onClick ={
-                    scope.launch {
-                        navController.navigate(FeatureScreens.NewMeetingScreen.route)
-                    }
-                },
-                )
-
-        }
+           ExpandableFAB(
+               navController = navController,
+               floatingActionButtonList = listOf(
+                   {
+                       ExtendedFloatingActionButton(
+                           text = { Text("Add Meeting") },
+                           icon = {
+                               Icon(Icons.Default.Add, contentDescription = "Add")
+                           },
+                           onClick = {
+                               scope.launch {
+                                   navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                               }
+                           },
+                           modifier = Modifier.padding(bottom = 10.dp),
+                           backgroundColor = Color(0xffffae42)
+                       )
+                   },
+                   {
+                       ExtendedFloatingActionButton(
+                           text = { Text("Previous Meetings") },
+                           icon = {
+                               Icon(painter = painterResource(R.drawable.outline_history_24), contentDescription = "History")
+                           },
+                           onClick = {
+                               scope.launch {
+                                   navController.navigate(FeatureScreens.PastMeetingScreen.route)
+                               }
+                           },
+                           modifier = Modifier.padding(bottom = 10.dp),
+                           backgroundColor = Color(0xffffae42)
+                       )
+                   }
+               )
+           )
+       }
 
     ){
         val isLoading by meetingViewModel.isLoading.collectAsState()
