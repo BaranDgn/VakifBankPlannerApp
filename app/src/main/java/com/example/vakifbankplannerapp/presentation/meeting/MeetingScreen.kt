@@ -8,9 +8,14 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -18,24 +23,43 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
+import com.example.vakifbankplannerapp.presentation.addEvent.ClockTimePicker
+import com.example.vakifbankplannerapp.presentation.addEvent.DateTimePicker
+import com.example.vakifbankplannerapp.presentation.addEvent.DateTimePickerScreen
+import com.example.vakifbankplannerapp.presentation.addEvent.DropDownMenuForTeams
 import com.example.vakifbankplannerapp.presentation.view.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockConfig
+import com.maxkeppeler.sheets.clock.models.ClockSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -146,13 +170,15 @@ fun MeetingScreen(
 fun MeetingOrderByTeam(
     navController: NavController,
     meetingListem : MeetingItem,
-    meetingViewModel: MeetingViewModel = hiltViewModel()
+    meetingViewModel: MeetingViewModel = hiltViewModel(),
+    updateViewModel: UpdateViewModel = hiltViewModel()
 ) {
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     // Define a variable to store the ID of the item to be deleted
     var itemToDelete by remember { mutableStateOf<DeleteItem?>(null) }
 
+    var selectedMeeting by remember { mutableStateOf<Meeting?>(null) }
 
     LazyColumn(contentPadding = PaddingValues(5.dp)){
         items(meetingListem) { item ->
@@ -209,6 +235,7 @@ fun MeetingOrderByTeam(
                         meetingContent = item.meetingContext,
                         meetingNotes = item.meetingContent,
                         navController = navController,
+                        onEditClicked = { selectedMeeting = item}
                     )
                 }
             )
@@ -253,12 +280,142 @@ fun MeetingOrderByTeam(
                 )
             }
 
+            // Show the update pop-up when a meeting is selected
+            selectedMeeting?.let { meeting ->
+                MeetingUpdatePopup(
+                    meeting = meeting,
+                    onDismiss = { selectedMeeting = null },
+                    onUpdate = { updatedMeeting ->
+                        CoroutineScope(Dispatchers.IO).launch{
+                            updateViewModel.updatedMeeting(updateMeeting = updatedMeeting)
+                        }
+                        selectedMeeting = null
+                    }
+                )
+            }
 
         }
 
-
     }
 }
+
+@Composable
+fun DateTimePicker(
+    onValueChangeForDate: (String) -> Unit,
+    onValueChangeForTime: (String) -> Unit,
+    showDatePicker: Boolean,
+    showTimePicker: Boolean
+) {
+    var calenderValue by remember{ mutableStateOf("") }
+    var clockValue by remember{ mutableStateOf("") }
+
+    val calenderState = rememberSheetState()
+    val clockState = rememberSheetState()
+
+    if(showDatePicker) {
+        CalendarDialog(
+            state = calenderState,
+            config = CalendarConfig(
+                monthSelection = true,
+                yearSelection = true,
+                style = CalendarStyle.MONTH,
+                //disabledDates = listOf(LocalDate.now().plusDays(7))
+            ),
+            selection = CalendarSelection.Date { date ->
+                calenderValue = date.toString()
+                onValueChangeForDate(calenderValue)
+            })
+    }
+    if(showTimePicker){
+        ClockDialog(
+            state = clockState,
+            config = ClockConfig(
+                is24HourFormat = true
+            ),
+            selection = ClockSelection.HoursMinutes{ hours, minutes ->
+                val formattedClock = String.format("%02d:%02d", hours, minutes)
+                clockValue = formattedClock
+                onValueChangeForTime(clockValue)
+            })
+    }
+
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+        TextField(
+            value = calenderValue,
+            onValueChange = {calenderValue = it
+                //onValueChangeForDate(it)
+            },
+            readOnly = true,
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+                .shadow(1.dp)
+                .clickable {
+                    calenderState.show()
+                }
+                .focusRequester(focusRequester = FocusRequester()),
+            label = { Text(text = "Meeting Date") },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            trailingIcon = {
+                IconButton(onClick = {
+                    calenderState.show()
+                }) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(R.drawable.calendar),
+                        contentDescription = null,
+
+                        )
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        TextField(
+            value = clockValue,
+            onValueChange = {clockValue = it
+                //onValueChangeForDate(it)
+            },
+            readOnly = true,
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+                .shadow(1.dp)
+                .clickable {
+                    clockState.show()
+                }
+                .focusRequester(focusRequester = FocusRequester()),
+            label = { Text(text = "Meeting Time") },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            trailingIcon = {
+                IconButton(onClick = {
+                    clockState.show()
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.time),
+                        contentDescription = null,
+                    )
+                }
+            }
+        )
+    }
+}
+
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)

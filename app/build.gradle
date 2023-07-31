@@ -120,6 +120,5 @@ dependencies {
     //Swipe Refresh
     implementation "com.google.accompanist:accompanist-swiperefresh:0.27.0"
 
-
  //   implementation "androidx.compose.ui:ui-gesture:1.1.0-alpha01"
 }

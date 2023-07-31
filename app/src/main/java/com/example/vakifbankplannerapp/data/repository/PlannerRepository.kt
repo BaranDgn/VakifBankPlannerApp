@@ -50,6 +50,14 @@ class PlannerRepository @Inject constructor(
         }
     }
 
+    suspend fun updateMeetingRepo(updateMeeting: UpdateMeeting){
+        try{
+            api.updateMeeting(updateMeeting)
+        }catch (e : java.lang.Exception){
+            println("Data cannot updated")
+        }
+    }
+
     //Fetch Event
     suspend fun getEvent() : Resource<Event> {
         val response = try{

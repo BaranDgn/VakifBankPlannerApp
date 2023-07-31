@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.AddMeetingItem
+import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankplannerapp.presentation.addMeeting.NewMeetingViewModel
 import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
@@ -129,7 +130,6 @@ fun NewMeetingScreen(
             }
         }
     ){
-
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -174,8 +174,6 @@ fun NewMeetingScreen(
 
             //Save Button
             MeetingButton(navController, isMeetingDataValid()){
-
-
                 if(isMeetingDataValid()){
                     val newMeetingData = AddMeetingItem(
                         teamName = teamNameValue,
@@ -490,12 +488,12 @@ fun DropDownMenuForTeams(
 
     var mExpanded by remember{ mutableStateOf(false) }
     val mTeams = listOf(
-        "Team 1",
-        "Team 2",
-        "Team 3",
-        "Team 4",
-        "Team 5",
-        "Team 6"
+        "Platinium",
+        "Rocket",
+        "Storm",
+        "Doremigos",
+        "Mobil",
+        "Orion"
     )
 
     var mSelectedText by remember{ mutableStateOf("") }

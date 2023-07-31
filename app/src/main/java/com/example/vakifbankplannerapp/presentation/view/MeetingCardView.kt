@@ -36,6 +36,7 @@ fun MeetingCardView(
     meetingContent: String,
     meetingNotes: String,
     navController: NavController,
+    onEditClicked :() -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var hasMore by remember { mutableStateOf(false) }
@@ -44,12 +45,11 @@ fun MeetingCardView(
             .fillMaxWidth()
             .padding(8.dp)
          ,
-        onClick = {},
+        onClick = {onEditClicked()},
         shape = RoundedCornerShape(8.dp),
         elevation = 5.dp
     ) {
         Column(modifier = Modifier
-
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
