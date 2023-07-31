@@ -13,6 +13,10 @@ interface PlannerService {
     @POST("Meeting/GetMeeting")
     suspend fun getMeetings() : MeetingItem
 
+    //Past Meetings
+    @POST("/Meeting/GetPreviousMeetings")
+    suspend fun getPastMeetings() : MeetingItem
+
     //Add Meeting
     @POST("/Meeting/AddMeeting")
     suspend fun addMeeting(@Body addMeetingItem: AddMeetingItem)
@@ -24,6 +28,10 @@ interface PlannerService {
     //Events
     @POST("api/Event/GetEvent")
     suspend fun getEvents() : Event
+
+    //Past Events
+    @POST("api/Event/GetPreviousEvents")
+    suspend fun getPastEvents() : Event
 
     //Birthdays
     @POST("BDay/GetAllBDay")

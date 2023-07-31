@@ -8,6 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.vakifbankplannerapp.pastEvent.PastEventScreen
+import com.example.vakifbankplannerapp.pastMeeting.PastMeetingScreen
 import com.example.vakifbankplannerapp.presentation.addEvent.NewEventScreen
 import com.example.vakifbankplannerapp.presentation.addEvent.NewMeetingScreen
 import com.example.vakifbankplannerapp.presentation.birthday.BirthdayScreen
@@ -51,12 +53,18 @@ fun NavGraphBuilder.featureNavGraph(
         route = Graph.FEATURE,
         startDestination = FeatureScreens.NewMeetingScreen.route
     ){
-        //composable()
         composable(route = FeatureScreens.NewMeetingScreen.route){
             NewMeetingScreen(navHostController)
         }
+
         composable(route = FeatureScreens.NewEventScreen.route){
             NewEventScreen(navHostController)
+        }
+        composable(route = FeatureScreens.PastMeetingScreen.route){
+            PastMeetingScreen(navHostController)
+        }
+        composable(route = FeatureScreens.PastEventsScreen.route){
+            PastEventScreen(navHostController)
         }
     }
 }
@@ -65,6 +73,8 @@ sealed class FeatureScreens(val route: String){
     object NewMeetingScreen : FeatureScreens(route = "meeting_screen")
     object NewEventScreen : FeatureScreens(route = "event_screen")
     object BirthdayScreen : FeatureScreens(route = "birthday_screen")
+    object PastMeetingScreen : FeatureScreens(route= "past_meeting_screen")
+    object PastEventsScreen : FeatureScreens(route= "past_event_screen")
 }
 
 

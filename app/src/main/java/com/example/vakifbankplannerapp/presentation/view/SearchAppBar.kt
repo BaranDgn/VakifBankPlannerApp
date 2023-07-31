@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -16,6 +17,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 
 @Composable
 fun MainSearchBar(
@@ -25,12 +28,19 @@ fun MainSearchBar(
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit,
     onSearchTriggered: () -> Unit,
-    text: String
+    text: String,
+    includeBack: Boolean = false,
+    navController: NavController? = null
 ) {
 
     when(searchWidgetState){
         SearchWidgetState.CLOSED ->{
-            DefaultAppBar (onSearchClicked = onSearchTriggered, text)
+            if (navController != null) {
+                DefaultAppBar (onSearchClicked = onSearchTriggered, text, includeBack, navController)
+            }
+            else {
+                DefaultAppBar (onSearchClicked = onSearchTriggered, text, includeBack)
+            }
         }
         SearchWidgetState.OPENED->{
             SearchAppBar(
@@ -125,7 +135,9 @@ fun SearchAppBar(
 @Composable
 fun DefaultAppBar(
     onSearchClicked: () -> Unit,
-    text: String
+    text: String,
+    includeBack: Boolean,
+    navController: NavController? = null
 ) {
         TopAppBar(
             title = {
@@ -144,6 +156,14 @@ fun DefaultAppBar(
             backgroundColor = Color(0xffFFAE42),
             contentColor = Color.Black,
             elevation = 10.dp,
-            modifier = Modifier.height(60.dp)
+            modifier = Modifier.height(60.dp),
+            navigationIcon = if (includeBack) {
+                {
+                    IconButton(onClick = { navController?.navigateUp() }) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "",
+                            tint = Color.White)
+                    }
+                }
+            } else null
         )
 }

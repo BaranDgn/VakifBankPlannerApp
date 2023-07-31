@@ -13,15 +13,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.Event
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.view.EventCardView
+import com.example.vakifbankplannerapp.presentation.view.ExpandableFAB
 import com.example.vakifbankplannerapp.presentation.view.MainSearchBar
 import com.example.vakifbankplannerapp.presentation.view.SearchWidgetState
 import kotlinx.coroutines.launch
@@ -58,18 +61,41 @@ fun EventScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text("") },
-                backgroundColor = Color(0xffFFAE42),
-                icon = {Icon(Icons.Filled.Add, contentDescription = "")},
-                onClick ={
-                    scope.launch {
-                        navController.navigate(FeatureScreens.NewEventScreen.route)
+            ExpandableFAB(
+                navController = navController,
+                floatingActionButtonList = listOf(
+                    {
+                        ExtendedFloatingActionButton(
+                            text = { Text("Add Event") },
+                            icon = {
+                                Icon(Icons.Default.Add, contentDescription = "Add")
+                            },
+                            onClick = {
+                                scope.launch {
+                                    navController.navigate(FeatureScreens.NewEventScreen.route)
+                                }
+                            },
+                            modifier = Modifier.padding(bottom = 10.dp),
+                            backgroundColor = Color(0xffffae42)
+                        )
+                    },
+                    {
+                        ExtendedFloatingActionButton(
+                            text = { Text("Previous Events") },
+                            icon = {
+                                Icon(painter = painterResource(R.drawable.outline_history_24), contentDescription = "History")
+                            },
+                            onClick = {
+                                scope.launch {
+                                    navController.navigate(FeatureScreens.PastEventsScreen.route)
+                                }
+                            },
+                            modifier = Modifier.padding(bottom = 10.dp),
+                            backgroundColor = Color(0xffffae42)
+                        )
                     }
-
-                },
-
                 )
+            )
         }
     ){
         Column(
@@ -103,7 +129,6 @@ fun EventScreen(
 
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
