@@ -12,7 +12,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +43,9 @@ fun BirthdayScreen(
     val birthdays = produceState<Resource<Birthday>>(initialValue = Resource.Loading()){
         value = birthdayViewModel.loadBirthdays()
     }.value
+
+    var hasBirhtyday by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -51,36 +58,71 @@ fun BirthdayScreen(
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(Color(android.graphics.Color.parseColor("#d3d3d3cc")))
         ){
-            Column(
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp)
-            ) {
-                Text(
-                    "Doğum Günün Kultu Olsun",
-                    fontSize = 50.sp,
-                    textAlign = TextAlign.Center,
-                    fontFamily = Great_Vibes
-                )
-                when(birthdays){
-                    is Resource.Success->{
-                        val birthday = birthdays.data
-                        if (birthday != null) {
-                            BirthdayListing(birthday =birthday)
+            when(birthdays){
+                is Resource.Success->{
+                    val birthday = birthdays.data
+                    if (birthday != null) {
+                        if (birthday.size > 0) {
+                            hasBirhtyday = true
+                            Column  (
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(10.dp),
+                                verticalArrangement = Arrangement.SpaceAround,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ){
+                                Text(
+                                    "Doğum Günün Kultu Olsun",
+                                    fontSize = 50.sp,
+                                    textAlign = TextAlign.Center,
+                                    fontFamily = Great_Vibes
+                                )
+                                BirthdayListing(birthday =birthday)
+                            }
+                        } else {
+                            Text(
+                                "Bugün Doğum Günü Olan Yok",
+                                fontSize = 50.sp,
+                                textAlign = TextAlign.Center,
+                                fontFamily = Great_Vibes
+                            )
                         }
                     }
-                    is Resource.Error->{
+                    else{
+                        Text(
+                            "Bugün Doğum Günü Olan Yok",
+                            fontSize = 50.sp,
+                            textAlign = TextAlign.Center,
+                            fontFamily = Great_Vibes
+                        )
+                    }
+                }
+                is Resource.Error->{
 
-                    }
-                    is Resource.Loading->{
-                        CircularProgressIndicator(color = Color.Black, modifier = Modifier.align(Alignment.CenterHorizontally))
-                    }
+                }
+                is Resource.Loading->{
+                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.align(Alignment.Center))
                 }
             }
         }
     }
+    if (hasBirhtyday){
+        KonfettiView(
+            modifier = Modifier.fillMaxSize(),
+            parties = listOf(
+                Party(
+                    speed = 0f,
+                    maxSpeed = 30f,
+                    damping = 0.9f,
+                    spread = 360,
+                    colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                    position = Position.Relative(0.5, 0.0),
+                    emitter = Emitter(duration = 1, TimeUnit.SECONDS).max(100)
+                )
+            )
+        )
+    }
+
     KonfettiView(
         modifier = Modifier.fillMaxSize(),
         parties = listOf(
