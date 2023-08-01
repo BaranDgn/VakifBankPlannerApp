@@ -19,6 +19,8 @@ class EventViewModel@Inject constructor(
     private val repoEvent : PlannerRepository
 ) : ViewModel() {
 
+    val didAnimationExecute = mutableStateOf(false)
+
     suspend fun loadEvents() : Resource<Event>
     {
         return repoEvent.getEvent()
