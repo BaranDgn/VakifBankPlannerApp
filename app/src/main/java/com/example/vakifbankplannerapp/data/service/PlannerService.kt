@@ -34,7 +34,7 @@ interface PlannerService {
 
     @POST("/api/Event/PostEvent")
     suspend fun addEvent(@Body addEventItem: AddEventItem)
-=======
+
     //Past Events
     @POST("api/Event/GetPreviousEvents")
     suspend fun getPastEvents() : Event

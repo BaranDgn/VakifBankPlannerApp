@@ -114,7 +114,9 @@ fun PastEventListing(
                 eventDateTime= tarih.tarih,
                 eventHour = tarih.saat,
                 meetingNotes= event.eventNotes,
-                navController = navController)
+                navController = navController,
+                onEditClicked = {}
+            )
         }
     }
 }

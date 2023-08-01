@@ -79,7 +79,6 @@ class PlannerRepository @Inject constructor(
         return Resource.Success(response)
     }
 
- dev/feature/01_dev_baran
     suspend fun addEvent(addEventItem: AddEventItem){
         try {
             api.addEvent(addEventItem)
@@ -95,12 +94,13 @@ class PlannerRepository @Inject constructor(
             println(e.message)
         }
     }
-    suspend fun deleteEvent(deleteEvent: DeleteEvent){
+    suspend fun deleteEvent(deleteEvent: DeleteEvent) {
         try {
             api.deleteEvent(deleteEvent)
-        }catch (e: java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             println(e.message)
         }
+    }
 
     //Fetch Previous Events
     suspend fun getPastEvent() : Resource<Event> {
@@ -120,6 +120,5 @@ class PlannerRepository @Inject constructor(
             return Resource.Error(e.message.toString())
         }
         return Resource.Success(response)
-
     }
 }
