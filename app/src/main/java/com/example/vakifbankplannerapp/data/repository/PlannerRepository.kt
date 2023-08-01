@@ -33,6 +33,17 @@ class PlannerRepository @Inject constructor(
         }
         return Resource.Success(response)
     }
+
+    //Fetch Previous Meetings
+    suspend fun getPastMeeting() : Resource<MeetingItem> {
+        val response = try{
+            api.getPastMeetings()
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+    }
+
     //Add Meeting
     suspend fun addMeetingRepo(addMeeting : AddMeetingItem){
         try {
@@ -68,6 +79,7 @@ class PlannerRepository @Inject constructor(
         return Resource.Success(response)
     }
 
+ dev/feature/01_dev_baran
     suspend fun addEvent(addEventItem: AddEventItem){
         try {
             api.addEvent(addEventItem)
@@ -89,5 +101,25 @@ class PlannerRepository @Inject constructor(
         }catch (e: java.lang.Exception){
             println(e.message)
         }
+
+    //Fetch Previous Events
+    suspend fun getPastEvent() : Resource<Event> {
+        val response = try{
+            api.getPastEvents()
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+    }
+
+    //Fetch Birthday
+    suspend fun getBirthday() : Resource<Birthday> {
+        val response = try{
+            api.getBirthday()
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+
     }
 }

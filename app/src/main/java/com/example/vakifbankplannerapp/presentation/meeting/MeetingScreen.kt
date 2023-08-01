@@ -98,18 +98,42 @@ fun MeetingScreen(
         },
 
        floatingActionButton = {
-           ExtendedFloatingActionButton(
-                text = { Text("") },
-                backgroundColor = Color(0xffFFAE42),
-                icon = {Icon(Icons.Filled.Add, contentDescription = "")},
-                onClick ={
-                    scope.launch {
-                        navController.navigate(FeatureScreens.NewMeetingScreen.route)
-                    }
-                },
-                )
-
-        }
+           ExpandableFAB(
+               navController = navController,
+               floatingActionButtonList = listOf(
+                   {
+                       ExtendedFloatingActionButton(
+                           text = { Text("Add Meeting") },
+                           icon = {
+                               Icon(Icons.Default.Add, contentDescription = "Add")
+                           },
+                           onClick = {
+                               scope.launch {
+                                   navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                               }
+                           },
+                           modifier = Modifier.padding(bottom = 10.dp),
+                           backgroundColor = Color(0xffffae42)
+                       )
+                   },
+                   {
+                       ExtendedFloatingActionButton(
+                           text = { Text("Previous Meetings") },
+                           icon = {
+                               Icon(painter = painterResource(R.drawable.outline_history_24), contentDescription = "History")
+                           },
+                           onClick = {
+                               scope.launch {
+                                   navController.navigate(FeatureScreens.PastMeetingScreen.route)
+                               }
+                           },
+                           modifier = Modifier.padding(bottom = 10.dp),
+                           backgroundColor = Color(0xffffae42)
+                       )
+                   }
+               )
+           )
+       }
 
     ){
         val isLoading by meetingViewModel.isLoading.collectAsState()
@@ -295,6 +319,8 @@ fun MeetingOrderByTeam(
 
     }
 }
+
+
 
 @Composable
 fun DateTimePicker(

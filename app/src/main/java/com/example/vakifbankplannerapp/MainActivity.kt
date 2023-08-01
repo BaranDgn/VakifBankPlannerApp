@@ -17,7 +17,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            VakifbankPlannerAppTheme{
                 RootNavigationGraph(navController = rememberNavController(), startDestination = Graph.AUTHENTICATION)
+            }
         }
     }
 }

@@ -120,45 +120,52 @@ fun MeetingCardView(
 
                         }
                     }
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = "Meeting Notes: ",
-                        style = TextStyle(color = Color.Black, fontSize = 14.sp,  textDecoration = TextDecoration.Underline)
-                    )
-
-                    Text(
-                        text = meetingNotes,
-                        style = TextStyle(color = Color.Black, fontSize = 17.sp),
-                        maxLines = if (expanded) Int.MAX_VALUE else 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.animateContentSize(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = LinearOutSlowInEasing
-                            )
+                    Column(modifier = Modifier
+                        .padding(
+                            start = 4.dp,
+                            end = 4.dp
                         ),
-                        onTextLayout = {
-                            if(it.hasVisualOverflow){
-                                hasMore = true
-                            }
-                        }
-                    )
-                    if (hasMore){
-                        IconButton (
-                            onClick = { expanded = !expanded },
+                    ){
+                        Text(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .alpha(0.5f)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowDropDown,
-                                contentDescription = "Expandable Icon",
-                                tint = Color.Black,
+                                .fillMaxWidth(),
+                            text = "Meeting Notes: ",
+                            style = TextStyle(color = Color.Black, fontSize = 14.sp)
+                        )
+
+                        Text(
+                            text = meetingNotes,
+                            style = TextStyle(color = Color.Black, fontSize = 17.sp),
+                            maxLines = if (expanded) Int.MAX_VALUE else 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.animateContentSize(
+                                animationSpec = tween(
+                                    durationMillis = 300,
+                                    easing = LinearOutSlowInEasing
+                                )
+                            ),
+                            onTextLayout = {
+                                if(it.hasVisualOverflow){
+                                    hasMore = true
+                                }
+                            }
+                        )
+                        if (hasMore){
+                            IconButton (
+                                onClick = { expanded = !expanded },
                                 modifier = Modifier
+                                    .fillMaxWidth()
                                     .alpha(0.5f)
-                                    .rotate(if (expanded) 180f else 0f)
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowDropDown,
+                                    contentDescription = "Expandable Icon",
+                                    tint = Color.Black,
+                                    modifier = Modifier
+                                        .alpha(0.5f)
+                                        .rotate(if (expanded) 180f else 0f)
+                                )
+                            }
                         }
                     }
                 }
