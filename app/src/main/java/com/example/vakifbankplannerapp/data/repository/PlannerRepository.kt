@@ -89,7 +89,7 @@ class PlannerRepository @Inject constructor(
 
     suspend fun updateEvent(updateEvent: UpdateEvent){
         try{
-            api.UpdateEvent(updateEvent)
+            api.updateEvent(updateEvent)
         }catch (e: java.lang.Exception){
             println(e.message)
         }

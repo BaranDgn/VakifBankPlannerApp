@@ -2,8 +2,6 @@ package com.example.vakifbankplannerapp.presentation.authantication
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -43,9 +41,9 @@ class LoginViewModel@Inject constructor(
                             navController.navigate(Graph.HOME){
                                 popUpTo(AuthScreen.Login.route){inclusive = true}
                             }
-                            Toast.makeText(context,"Welcome to VakıfBank Planner App", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context,"VakıfBank Planner App Hoşgeldiniz..", Toast.LENGTH_LONG).show()
                         }else{
-                            Toast.makeText(context, "Please check your sicil number and password, then try again - ${response.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Lütfen, Sicil Numaranızı ve Şifrenizi kontrol edin ve tekrar deneyin.", Toast.LENGTH_LONG).show()
                         }
                     }else{
                         Toast.makeText(context, "There is a error at server", Toast.LENGTH_LONG).show()
@@ -54,7 +52,8 @@ class LoginViewModel@Inject constructor(
                     _loadingState.value = false
                 }
                 is Resource.Error->{
-                    Toast.makeText(context, "Please check your sicil number and password, then try again ", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Lütfen, Sicil Numaranızı ve Şifrenizi kontrol edin ve tekrar deneyin.", Toast.LENGTH_LONG).show()
+                    _loadingState.value = false
                 }
                else -> Unit
             }

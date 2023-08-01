@@ -70,9 +70,7 @@ fun MeetingScreen(
     val searchWidgetState by meetingViewModel.searchWidgetState
     val searchTextState by meetingViewModel.searchTextState
 
-    var meetingOfList by remember {
-        meetingViewModel.meetingList
-    }
+    var meetingOfList by remember { meetingViewModel.meetingList }
 
     val scope = rememberCoroutineScope()
 
@@ -143,7 +141,7 @@ fun MeetingScreen(
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = meetingViewModel::refreshMeetings
+            onRefresh = { meetingViewModel.refreshMeetings(navController) }
         ) {
             Column(
                 modifier = Modifier
@@ -396,7 +394,7 @@ fun DateTimePicker(
                     calenderState.show()
                 }) {
                     Icon(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.calendar),
+                        painter = painterResource(R.drawable.calendar),
                         contentDescription = null,
 
                         )
