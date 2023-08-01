@@ -47,7 +47,7 @@ fun MainSearchBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked,
-                onSearchClicked = { onSearchClicked(it) },
+                onSearchClicked = { onSearchClicked(searchTextState) },
 
             )
         }

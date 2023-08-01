@@ -9,13 +9,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -39,10 +35,8 @@ import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
-import com.example.vakifbankplannerapp.presentation.addEvent.ClockTimePicker
-import com.example.vakifbankplannerapp.presentation.addEvent.DateTimePicker
-import com.example.vakifbankplannerapp.presentation.addEvent.DateTimePickerScreen
-import com.example.vakifbankplannerapp.presentation.addEvent.DropDownMenuForTeams
+import com.example.vakifbankplannerapp.presentation.updateMeeting.MeetingUpdatePopup
+import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdateViewModel
 import com.example.vakifbankplannerapp.presentation.view.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -58,15 +52,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MeetingScreen(
     navController: NavController,
-    meetingViewModel: MeetingViewModel = hiltViewModel()
+    meetingViewModel: MeetingViewModel = hiltViewModel(),
 ) {
+
 
     val context = LocalContext.current
 
@@ -81,6 +75,7 @@ fun MeetingScreen(
     }
 
     val scope = rememberCoroutineScope()
+
 
     Scaffold(
         topBar = {
@@ -146,7 +141,7 @@ fun MeetingScreen(
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = meetingViewModel::loadStuff
+            onRefresh = meetingViewModel::refreshMeetings
         ) {
             Column(
                 modifier = Modifier
@@ -155,7 +150,9 @@ fun MeetingScreen(
                     .padding(it)
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
+                //MeetingOrderByTeam(navController = navController, meetingListem = meetingOfList)
                 when(meetings){
+
                     is Resource.Success->{
                         val meeting = meetings.data
                         if (meeting != null) {
@@ -193,7 +190,7 @@ fun MeetingScreen(
 @Composable
 fun MeetingOrderByTeam(
     navController: NavController,
-    meetingListem : MeetingItem,
+    meetingListem : List<Meeting>,
     meetingViewModel: MeetingViewModel = hiltViewModel(),
     updateViewModel: UpdateViewModel = hiltViewModel()
 ) {

@@ -1,4 +1,4 @@
-package com.example.vakifbankplannerapp.presentation.view
+package com.example.vakifbankplannerapp.presentation.updateMeeting
 
 import android.os.Build
 import androidx.annotation.RequiresApi

@@ -32,6 +32,9 @@ interface PlannerService {
     @POST("api/Event/GetEvent")
     suspend fun getEvents() : Event
 
+    @POST("/api/Event/PostEvent")
+    suspend fun addEvent(@Body addEventItem: AddEventItem)
+=======
     //Past Events
     @POST("api/Event/GetPreviousEvents")
     suspend fun getPastEvents() : Event
@@ -40,5 +43,11 @@ interface PlannerService {
     @POST("BDay/GetAllBDay")
     suspend fun getBirthday() : Birthday
 
+
+    @POST("/api/Event/DeleteEvent")
+    suspend fun deleteEvent(@Body deleteEvent: DeleteEvent)
+
+    @POST("/api/Event/UpdateEvent")
+    suspend fun UpdateEvent(@Body updateEvent: UpdateEvent)
 
 }

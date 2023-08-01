@@ -25,7 +25,8 @@ fun EventCardView(
      eventDateTime: String,
      eventHour : String,
      meetingNotes: String,
-    navController: NavController
+    navController: NavController,
+     onEditClicked: ()-> Unit
 ) {
 
     Card(
@@ -33,6 +34,7 @@ fun EventCardView(
             .fillMaxWidth()
             .padding(8.dp)
        ,
+        onClick = {onEditClicked()},
         shape = RoundedCornerShape(8.dp),
         elevation = 5.dp,
         backgroundColor = Color.White// Set the card's background color here

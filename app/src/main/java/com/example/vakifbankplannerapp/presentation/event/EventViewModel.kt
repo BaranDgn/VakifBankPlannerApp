@@ -4,6 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.vakifbankplannerapp.data.model.AddEventItem
+import com.example.vakifbankplannerapp.data.model.DeleteEvent
 import com.example.vakifbankplannerapp.data.model.Event
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
@@ -20,6 +22,11 @@ class EventViewModel@Inject constructor(
     suspend fun loadEvents() : Resource<Event>
     {
         return repoEvent.getEvent()
+    }
+
+
+    suspend fun deleteSelectedEvent(deleteEvent: DeleteEvent){
+        repoEvent.deleteEvent(deleteEvent)
     }
 
     private val _searchWidgetStateForEvent : MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)

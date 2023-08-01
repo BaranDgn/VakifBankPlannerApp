@@ -2,6 +2,8 @@ package com.example.vakifbankplannerapp.presentation.event
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,28 +20,42 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+
+import com.example.vakifbankplannerapp.data.model.*
 import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.Event
+
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
+import com.example.vakifbankplannerapp.presentation.meeting.SwipeBackground
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
+import com.example.vakifbankplannerapp.presentation.updateMeeting.MeetingUpdatePopup
+import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdatePopUpForEvent
+import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdateViewModel
 import com.example.vakifbankplannerapp.presentation.view.EventCardView
 import com.example.vakifbankplannerapp.presentation.view.ExpandableFAB
 import com.example.vakifbankplannerapp.presentation.view.MainSearchBar
+import com.example.vakifbankplannerapp.presentation.view.MeetingCardView
 import com.example.vakifbankplannerapp.presentation.view.SearchWidgetState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventScreen(
     navController: NavHostController,
-    eventViewModel : EventViewModel = hiltViewModel()
+    eventViewModel : EventViewModel = hiltViewModel(),
+    updateViewModel: UpdateViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
 
     val events = produceState<Resource<Event>>(initialValue = Resource.Loading()){
         value = eventViewModel.loadEvents()
     }.value
+
+    var selectedEvent by remember { mutableStateOf<EventItem?>(null) }
 
     val searchWidgetState by eventViewModel.searchWidgetStateForEvent
     val searchTextState by eventViewModel.searchTextStateForEvent
@@ -127,27 +143,141 @@ fun EventScreen(
             }
 
 
+
+
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventListing(
     navController: NavController,
-    eventList : Event
+    eventList : Event,
+    eventViewModel: EventViewModel = hiltViewModel(),
+    updateViewModel: UpdateViewModel = hiltViewModel()
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    // Define a variable to store the ID of the item to be deleted
+    var itemToDelete by remember { mutableStateOf<DeleteItem?>(null) }
+
+    var selectedEvent by remember { mutableStateOf<EventItem?>(null) }
+
 
     LazyColumn(contentPadding = PaddingValues(5.dp)){
         items(eventList){event->
             val tarih = ZamanArrangement(event.eventDateTime).getOnlyDate()
-            EventCardView(
-                eventName = event.eventName,
-                eventType= event.eventType,
-                eventDateTime= tarih.tarih,
-                eventHour = tarih.saat,
-                meetingNotes= event.eventNotes,
-                navController = navController)
+
+
+            val dismissState = rememberDismissState(
+                confirmStateChange = {
+                    if (it == DismissValue.DismissedToEnd) {
+                        //navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                        CoroutineScope(Dispatchers.IO).launch{
+                            // meetingViewModel.deleteMeeting(DeleteItem(item.id))
+                            //AlertToDelete(DeleteItem(item.id), meetingViewModel)
+                            itemToDelete = DeleteItem(event.id)
+                            showDeleteDialog = true
+                        }
+                    }
+                    it != DismissValue.DismissedToEnd
+                }
+            )
+
+            LaunchedEffect(dismissState){
+                if (event == eventList.first()){
+                    dismissState.animateTo(
+                        DismissValue.DismissedToEnd,
+                        anim = tween(
+                            durationMillis = 400,
+                            easing = LinearOutSlowInEasing
+                        )
+                    )
+                    delay(100)
+                    dismissState.animateTo(
+                        DismissValue.Default,
+                        anim = tween(
+                            durationMillis = 400,
+                            easing = LinearOutSlowInEasing
+                        )
+                    )
+                }
+            }
+
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.StartToEnd),
+                dismissThresholds = { direction ->
+                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+                },
+                background = { SwipeBackground(dismissState = dismissState) },
+                dismissContent = {
+                    EventCardView(
+                        eventName = event.eventName,
+                        eventType= event.eventType,
+                        eventDateTime= tarih.tarih,
+                        eventHour = tarih.saat,
+                        meetingNotes= event.eventNotes,
+                        navController = navController,
+                        onEditClicked = { selectedEvent = event})
+                }
+            )
+
+            //Alert Dialog to delete event
+            if (showDeleteDialog && itemToDelete != null) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showDeleteDialog = false
+                        itemToDelete = null
+                    },
+                    title = { Text("Delete Item") },
+                    text = { Text("Are you sure you want to delete this item?") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                // Delete the item from the list and close the dialog
+                                itemToDelete?.let {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        eventViewModel.deleteSelectedEvent(DeleteEvent(deleteId = it.deleteId))
+                                    }
+                                }
+
+                                showDeleteDialog = false
+                                itemToDelete = null
+                            }
+
+                        ) {
+                            Text("Confirm")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                // Close the dialog without deleting the item
+                                showDeleteDialog = false
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            // Show the update pop-up when a meeting is selected
+            selectedEvent?.let { event ->
+                UpdatePopUpForEvent(
+                    event = event,
+                    onDismiss = { selectedEvent = null },
+                    onUpdate = { updatedMeeting ->
+                        CoroutineScope(Dispatchers.IO).launch{
+                            updateViewModel.updateEvent(updateEvent = updatedMeeting)
+                        }
+                        selectedEvent = null
+                    }
+                )
+            }
+
         }
     }
 }
