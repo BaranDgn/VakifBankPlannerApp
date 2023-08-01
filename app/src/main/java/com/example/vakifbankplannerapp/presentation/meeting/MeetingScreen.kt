@@ -102,7 +102,7 @@ fun MeetingScreen(
                  )
         },
 
-       floatingActionButton = {
+        floatingActionButton = {
            ExpandableFAB(
                navController = navController,
                floatingActionButtonList = listOf(
@@ -138,7 +138,9 @@ fun MeetingScreen(
                    }
                )
            )
-       }
+       },
+
+
 
     ){
         val isLoading by meetingViewModel.isLoading.collectAsState()
