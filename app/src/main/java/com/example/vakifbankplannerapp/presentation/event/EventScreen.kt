@@ -37,6 +37,8 @@ import com.example.vakifbankplannerapp.presentation.view.ExpandableFAB
 import com.example.vakifbankplannerapp.presentation.view.MainSearchBar
 import com.example.vakifbankplannerapp.presentation.view.MeetingCardView
 import com.example.vakifbankplannerapp.presentation.view.SearchWidgetState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -114,6 +116,13 @@ fun EventScreen(
             )
         }
     ){
+        val isLoading by eventViewModel.isLoading.collectAsState()
+
+        val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { eventViewModel.refreshEvents(navController) }
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -145,7 +154,7 @@ fun EventScreen(
 
 
 
-        }
+        }}
     }
 }
 
