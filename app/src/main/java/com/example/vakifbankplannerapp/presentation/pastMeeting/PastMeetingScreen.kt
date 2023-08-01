@@ -1,4 +1,4 @@
-package com.example.vakifbankplannerapp.pastMeeting
+package com.example.vakifbankplannerapp.presentation.pastMeeting
 
 import android.os.Build
 import android.widget.Toast
@@ -148,6 +148,7 @@ fun PastMeetingList(
                 meetingContent = item.meetingContext,
                 meetingNotes = item.meetingContent,
                 navController = navController,
+                onEditClicked = {item.id}
             )
         }
     }

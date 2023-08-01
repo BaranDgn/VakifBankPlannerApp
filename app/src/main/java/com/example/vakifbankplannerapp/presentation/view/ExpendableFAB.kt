@@ -9,6 +9,8 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +29,7 @@ fun ExpandableFAB(
     floatingActionButtonList: List<@Composable () -> Unit> = listOf()
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val rotation by animateFloatAsState(targetValue = if (isExpanded) 45f else 0f)
+    val rotation by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -50,7 +52,7 @@ fun ExpandableFAB(
                 modifier = Modifier
                     .size(if (isExpanded) 34.dp else 30.dp)
                     .rotate(rotation),
-                imageVector = Icons.Default.Add,
+                imageVector = if (isExpanded) Icons.Default.Close else Icons.Default.Menu,
                 contentDescription = if (isExpanded) "Close" else "Add"
             )
         }

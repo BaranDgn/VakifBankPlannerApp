@@ -1,4 +1,4 @@
-package com.example.vakifbankplannerapp.pastMeeting
+package com.example.vakifbankplannerapp.presentation.pastMeeting
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

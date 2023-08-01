@@ -8,8 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.vakifbankplannerapp.pastEvent.PastEventScreen
-import com.example.vakifbankplannerapp.pastMeeting.PastMeetingScreen
+import com.example.vakifbankplannerapp.presentation.pastEvent.PastEventScreen
+import com.example.vakifbankplannerapp.presentation.pastMeeting.PastMeetingScreen
 import com.example.vakifbankplannerapp.presentation.addEvent.NewEventScreen
 import com.example.vakifbankplannerapp.presentation.addEvent.NewMeetingScreen
 import com.example.vakifbankplannerapp.presentation.birthday.BirthdayScreen
