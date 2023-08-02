@@ -25,9 +25,9 @@ import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.Event
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
-import com.example.vakifbankkplannerapp.presentation.bottomBar.BottomBarScreen
+import com.example.vakifbankplannerapp.presentation.authantication.LoginViewModel
+import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
 import com.example.vakifbankplannerapp.presentation.meeting.MeetingViewModel
-import com.example.vakifbankplannerapp.presentation.meeting.SwipeBackground
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdatePopUpForEvent
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdateViewModel
@@ -196,7 +196,7 @@ fun EventListing(
                             meetingViewModel.refreshMeetings(navController, BottomBarScreen.Event.route)
                         }
                     }
-                    it != DismissValue.DismissedToEnd
+                    it != DismissValue.DismissedToStart
                 }
             )
 

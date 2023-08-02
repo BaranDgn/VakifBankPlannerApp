@@ -47,6 +47,10 @@ interface PlannerService {
     @POST("api/Event/GetPreviousEvents")
     suspend fun getPastEvents() : Event
 
+    //Incoming Birthdays
+    @POST("BDay/getUpcomingBDays")
+    suspend fun getIncomingBirthday() : IncomingBirthday
+
 
 
     //Birthdays

@@ -121,4 +121,14 @@ class PlannerRepository @Inject constructor(
         }
         return Resource.Success(response)
     }
+
+    //Fetch Incoming Birthday
+    suspend fun getIncomingBirthday() : Resource<IncomingBirthday> {
+        val response = try{
+            api.getIncomingBirthday()
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+    }
 }

@@ -3,9 +3,7 @@ package com.example.vakifbankplannerapp.presentation.meeting
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +16,6 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -26,12 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vakifbankplannerapp.R
-import com.example.vakifbankplannerapp.data.model.Birthday
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
@@ -63,7 +58,7 @@ import java.util.*
 fun MeetingScreen(
     navController: NavController,
     meetingViewModel: MeetingViewModel = hiltViewModel(),
-    isBirthday: Boolean = false
+    isBirthday: Boolean = false,
     loginViewModel: LoginViewModel= hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -241,7 +236,7 @@ fun MeetingOrderByTeam(
                         }
                         //delay(2000L)
                     }
-                    it != DismissValue.DismissedToEnd
+                    it != DismissValue.DismissedToStart
                 }
             )
             LaunchedEffect(dismissState){
