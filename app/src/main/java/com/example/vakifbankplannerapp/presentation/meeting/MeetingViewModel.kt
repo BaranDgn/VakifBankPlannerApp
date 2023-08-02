@@ -47,8 +47,6 @@ class MeetingViewModel@Inject constructor(
 
     var meetingList = mutableStateOf<List<Meeting>>(listOf())
 
-
-
     //Fetch Meetings
     suspend fun loadMeetings() : Resource<MeetingItem>{
         return repo.getMeeting()
@@ -117,13 +115,14 @@ class MeetingViewModel@Inject constructor(
         }
     }
 */
+
     //Refresh
     @RequiresApi(Build.VERSION_CODES.O)
-    fun refreshMeetings(navController: NavController){
+    fun refreshMeetings(navController: NavController, root: String){
         viewModelScope.launch {
             _isLoading.value = true
             delay(2000L)
-            navController.navigate(BottomBarScreen.Meeting.route)
+            navController.navigate(root)
             _isLoading.value = false
         }
     }
