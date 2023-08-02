@@ -1,5 +1,6 @@
 package com.example.vakifbankplannerapp.presentation.birthday
 
+import android.view.View
 import androidx.lifecycle.ViewModel
 import com.example.vakifbankplannerapp.data.model.Birthday
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
@@ -14,4 +15,6 @@ class BirthdayViewModel@Inject constructor (
     suspend fun loadBirthdays() : Resource<Birthday> {
         return repo.getBirthday()
     }
+
+
 }

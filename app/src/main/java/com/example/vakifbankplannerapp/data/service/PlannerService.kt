@@ -28,26 +28,28 @@ interface PlannerService {
     @POST("/Meeting/UpdateMeeting")
     suspend fun updateMeeting(@Body updateMeeting: UpdateMeeting)
 
+
     //Events
     @POST("api/Event/GetEvent")
     suspend fun getEvents() : Event
 
     @POST("/api/Event/PostEvent")
     suspend fun addEvent(@Body addEventItem: AddEventItem)
+    //Delete Event
+    @POST("/api/Event/DeleteEvent")
+    suspend fun deleteEvent(@Body deleteEvent: DeleteEvent)
+
+    //UpdateEvent
+    @POST("/api/Event/UpdateEvent")
+    suspend fun updateEvent(@Body updateEvent: UpdateEvent)
 
     //Past Events
     @POST("api/Event/GetPreviousEvents")
     suspend fun getPastEvents() : Event
 
+
+
     //Birthdays
     @POST("BDay/GetAllBDay")
     suspend fun getBirthday() : Birthday
-
-
-    @POST("/api/Event/DeleteEvent")
-    suspend fun deleteEvent(@Body deleteEvent: DeleteEvent)
-
-    @POST("/api/Event/UpdateEvent")
-    suspend fun UpdateEvent(@Body updateEvent: UpdateEvent)
-
 }

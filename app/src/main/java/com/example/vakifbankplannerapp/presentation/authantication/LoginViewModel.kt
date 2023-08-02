@@ -2,12 +2,15 @@ package com.example.vakifbankplannerapp.presentation.authantication
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.Login
+import com.example.vakifbankplannerapp.data.model.LoginResponse
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
@@ -30,40 +33,47 @@ class LoginViewModel@Inject constructor(
     private val _loadingState = MutableStateFlow(false)
     val loadingState: StateFlow<Boolean> = _loadingState
 
-    fun checkLogin(navController: NavController,context: Context, login : Login ){
+    var isAdmin = mutableStateOf(true)
+
+
+    fun isAdminCheck(isAdmin:Boolean) : Boolean{
+        return isAdmin
+    }
+
+
+    fun checkLogin(navController: NavController, context: Context, login: Login) {
         viewModelScope.launch {
             _loadingState.value = true
             val result = repoLogin.loginCheck(login)
 
-            when(result){
-                is Resource.Success->{
+            when (result) {
+                is Resource.Success -> {
                     val response = result.data
                     if (response != null) {
-                        if(response.isSuccessfull){
-                            navController.navigate(Graph.HOME){
-                                popUpTo(AuthScreen.Login.route){inclusive = true}
+                        if (response.isSuccessfull) {
+                            isAdmin.value = response.isManager // Set the isAdmin value here
+                            //isAdminCheck(response.isManager)
+                            navController.navigate(Graph.HOME) {
+                                popUpTo(AuthScreen.Login.route) { inclusive = true }
                             }
-                            Toast.makeText(context,"Welcome to VakıfBank Planner App", Toast.LENGTH_LONG).show()
-                        }else{
-                            Toast.makeText(context, "Please check your sicil number and password, then try again - ${response.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "VakıfBank Planner App Hoşgeldiniz..", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "Lütfen, Sicil Numaranızı ve Şifrenizi kontrol edin ve tekrar deneyin.", Toast.LENGTH_LONG).show()
                         }
-                    }else{
+                    } else {
                         Toast.makeText(context, "There is a error at server", Toast.LENGTH_LONG).show()
-
                     }
                     _loadingState.value = false
                 }
-                is Resource.Error->{
-                    Toast.makeText(context, "Please check your sicil number and password, then try again ", Toast.LENGTH_LONG).show()
+                is Resource.Error -> {
+                    Toast.makeText(context, "Lütfen, Sicil Numaranızı ve Şifrenizi kontrol edin ve tekrar deneyin.", Toast.LENGTH_LONG).show()
+                    _loadingState.value = false
                 }
-               else -> Unit
+                else -> Unit
             }
-
         }
-
-
-
     }
+
 /*
 
     private val _loginResult = MutableLiveData<LoginResult>()

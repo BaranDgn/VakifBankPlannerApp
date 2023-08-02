@@ -133,7 +133,7 @@ fun LoginScreen(
                     val passwordText = passwordState.value.text
 
                     if (sicilText.isEmpty() || passwordText.isEmpty()) {
-                        Toast.makeText(context, "Please enter both Sicil Number and password.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Lütfen, Sicil Numara ve Şifre değerleriniz Doldurunuz.", Toast.LENGTH_SHORT).show()
                     } else {
                         try {
                             val username = sicilText.toIntOrNull()
@@ -144,7 +144,7 @@ fun LoginScreen(
                                 loginViewModel.checkLogin(navController, context, login)
                             }
                         } catch (e: NumberFormatException) {
-                            Toast.makeText(context, "Invalid input. Please enter valid numbers.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Geçersi Değer! Lütfen geçerli bir değer giriniz.", Toast.LENGTH_SHORT).show()
                         }
                     }
                 },

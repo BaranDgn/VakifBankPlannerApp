@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
+
 
 @Composable
 fun MainSearchBar(
@@ -90,7 +90,9 @@ fun SearchAppBar(
                 IconButton(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
-                    onClick = {}) {
+                    onClick = {
+                        onSearchClicked(text)
+                    }) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "",

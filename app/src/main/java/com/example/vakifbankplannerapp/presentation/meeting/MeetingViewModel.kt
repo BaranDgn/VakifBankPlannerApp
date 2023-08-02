@@ -8,11 +8,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
+import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
 import com.example.vakifbankplannerapp.presentation.view.SearchWidgetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -46,8 +48,6 @@ class MeetingViewModel@Inject constructor(
     val isLoading = _isLoading.asStateFlow()
 
     var meetingList = mutableStateOf<List<Meeting>>(listOf())
-    var errorMessage = mutableStateOf("")
-
 
     //Fetch Meetings
     suspend fun loadMeetings() : Resource<MeetingItem>{
@@ -117,13 +117,14 @@ class MeetingViewModel@Inject constructor(
         }
     }
 */
+
     //Refresh
     @RequiresApi(Build.VERSION_CODES.O)
-    fun refreshMeetings(){
+    fun refreshMeetings(navController: NavController, root: String){
         viewModelScope.launch {
             _isLoading.value = true
             delay(2000L)
-            loadMeetings()
+            navController.navigate(root)
             _isLoading.value = false
         }
     }

@@ -37,6 +37,8 @@ import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
+import com.example.vakifbankplannerapp.presentation.authantication.LoginViewModel
+import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
 import com.example.vakifbankplannerapp.presentation.updateMeeting.MeetingUpdatePopup
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdateViewModel
 import com.example.vakifbankplannerapp.presentation.view.*
@@ -62,6 +64,7 @@ fun MeetingScreen(
     navController: NavController,
     meetingViewModel: MeetingViewModel = hiltViewModel(),
     isBirthday: Boolean = false
+    loginViewModel: LoginViewModel= hiltViewModel()
 ) {
     val context = LocalContext.current
 
@@ -71,12 +74,11 @@ fun MeetingScreen(
     val searchWidgetState by meetingViewModel.searchWidgetState
     val searchTextState by meetingViewModel.searchTextState
 
-    var meetingOfList by remember {
-        meetingViewModel.meetingList
-    }
+    var meetingOfList by remember { meetingViewModel.meetingList }
 
     val scope = rememberCoroutineScope()
 
+    val isAdminCheck = loginViewModel.isAdmin
 
     Scaffold(
         topBar = {
@@ -103,19 +105,23 @@ fun MeetingScreen(
                navController = navController,
                floatingActionButtonList = listOf(
                    {
-                       ExtendedFloatingActionButton(
-                           text = { Text("Add Meeting") },
-                           icon = {
-                               Icon(Icons.Default.Add, contentDescription = "Add")
-                           },
-                           onClick = {
-                               scope.launch {
-                                   navController.navigate(FeatureScreens.NewMeetingScreen.route)
-                               }
-                           },
-                           modifier = Modifier.padding(bottom = 10.dp),
-                           backgroundColor = Color(0xffffae42)
-                       )
+                       if(loginViewModel.isAdminCheck(isAdminCheck.value)){
+                           ExtendedFloatingActionButton(
+                               text = { Text("Add Meeting") },
+                               icon = {
+                                   Icon(Icons.Default.Add, contentDescription = "Add")
+                               },
+                               onClick = {
+                                   scope.launch {
+                                       navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                                   }
+                               },
+
+                               modifier = Modifier.padding(bottom = 10.dp),
+                               backgroundColor = Color(0xffffae42)
+                           )
+                       }
+
                    },
                    {
                        ExtendedFloatingActionButton(
@@ -144,7 +150,7 @@ fun MeetingScreen(
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = meetingViewModel::refreshMeetings
+            onRefresh = { meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route) }
         ) {
             Column(
                 modifier = Modifier
@@ -229,7 +235,11 @@ fun MeetingOrderByTeam(
                             //AlertToDelete(DeleteItem(item.id), meetingViewModel)
                             itemToDelete = DeleteItem(item.id)
                             showDeleteDialog = true
+                            //TEMPORARY SOLUTION
+                            //delay(2000L)
+                            //meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route)
                         }
+                        //delay(2000L)
                     }
                     it != DismissValue.DismissedToEnd
                 }
@@ -292,6 +302,8 @@ fun MeetingOrderByTeam(
                                 itemToDelete?.let {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         meetingViewModel.deleteMeeting(DeleteItem(deleteId = it.deleteId))
+                                        //delay(100L)
+                                        meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route)
                                     }
                                 }
 
@@ -324,6 +336,8 @@ fun MeetingOrderByTeam(
                     onUpdate = { updatedMeeting ->
                         CoroutineScope(Dispatchers.IO).launch{
                             updateViewModel.updatedMeeting(updateMeeting = updatedMeeting)
+                            delay(100L)
+                            meetingViewModel.refreshMeetings(navController,BottomBarScreen.Meeting.route)
                         }
                         selectedMeeting = null
                     }
@@ -408,7 +422,7 @@ fun DateTimePicker(
                     calenderState.show()
                 }) {
                     Icon(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.calendar),
+                        painter = painterResource(R.drawable.calendar),
                         contentDescription = null,
                         )
                 }
