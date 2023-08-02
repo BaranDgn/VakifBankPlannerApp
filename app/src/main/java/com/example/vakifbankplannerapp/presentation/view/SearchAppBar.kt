@@ -90,7 +90,9 @@ fun SearchAppBar(
                 IconButton(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
-                    onClick = {}) {
+                    onClick = {
+                        onSearchClicked(text)
+                    }) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "",

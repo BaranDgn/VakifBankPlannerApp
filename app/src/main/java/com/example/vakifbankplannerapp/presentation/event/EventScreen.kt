@@ -27,6 +27,9 @@ import com.example.vakifbankplannerapp.data.model.Event
 
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
+import com.example.vakifbankplannerapp.presentation.authantication.LoginViewModel
+import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
+import com.example.vakifbankplannerapp.presentation.meeting.MeetingViewModel
 import com.example.vakifbankplannerapp.presentation.meeting.SwipeBackground
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.updateMeeting.MeetingUpdatePopup
@@ -49,7 +52,8 @@ import kotlinx.coroutines.launch
 fun EventScreen(
     navController: NavHostController,
     eventViewModel : EventViewModel = hiltViewModel(),
-    updateViewModel: UpdateViewModel = hiltViewModel()
+    updateViewModel: UpdateViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
 
@@ -79,24 +83,27 @@ fun EventScreen(
             )
         },
         floatingActionButton = {
+
             ExpandableFAB(
                 navController = navController,
                 floatingActionButtonList = listOf(
                     {
-                        ExtendedFloatingActionButton(
-                            text = { Text("Add Event") },
-                            icon = {
-                                Icon(Icons.Default.Add, contentDescription = "Add")
-                            },
-                            onClick = {
-                                scope.launch {
-                                    navController.navigate(FeatureScreens.NewEventScreen.route)
-                                }
-                            },
-                            modifier = Modifier.padding(bottom = 10.dp),
-                            backgroundColor = Color(0xffffae42)
-                        )
-                    },
+                        if(loginViewModel.isAdmin.value){
+                            ExtendedFloatingActionButton(
+                                text = { Text("Add Event") },
+                                icon = {
+                                    Icon(Icons.Default.Add, contentDescription = "Add")
+                                },
+                                onClick = {
+                                    scope.launch {
+                                        navController.navigate(FeatureScreens.NewEventScreen.route)
+                                    }
+                                },
+                                modifier = Modifier.padding(bottom = 10.dp),
+                                backgroundColor = Color(0xffffae42)
+                            )
+                        }
+                        },
                     {
                         ExtendedFloatingActionButton(
                             text = { Text("Previous Events") },
@@ -165,7 +172,8 @@ fun EventListing(
     navController: NavController,
     eventList : Event,
     eventViewModel: EventViewModel = hiltViewModel(),
-    updateViewModel: UpdateViewModel = hiltViewModel()
+    updateViewModel: UpdateViewModel = hiltViewModel(),
+    meetingViewModel : MeetingViewModel = hiltViewModel()
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     // Define a variable to store the ID of the item to be deleted
@@ -188,6 +196,8 @@ fun EventListing(
                             //AlertToDelete(DeleteItem(item.id), meetingViewModel)
                             itemToDelete = DeleteItem(event.id)
                             showDeleteDialog = true
+                            delay(2000L)
+                            meetingViewModel.refreshMeetings(navController, BottomBarScreen.Event.route)
                         }
                     }
                     it != DismissValue.DismissedToEnd
@@ -249,6 +259,7 @@ fun EventListing(
                                 itemToDelete?.let {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         eventViewModel.deleteSelectedEvent(DeleteEvent(deleteId = it.deleteId))
+                                        meetingViewModel.refreshMeetings(navController,BottomBarScreen.Event.route)
                                     }
                                 }
 
@@ -281,6 +292,8 @@ fun EventListing(
                     onUpdate = { updatedMeeting ->
                         CoroutineScope(Dispatchers.IO).launch{
                             updateViewModel.updateEvent(updateEvent = updatedMeeting)
+                            delay(100L)
+                            meetingViewModel.refreshMeetings(navController,BottomBarScreen.Event.route)
                         }
                         selectedEvent = null
                     }
