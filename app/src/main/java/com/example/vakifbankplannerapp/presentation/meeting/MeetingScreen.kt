@@ -26,10 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vakifbankplannerapp.R
+import com.example.vakifbankplannerapp.data.model.Birthday
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
@@ -61,10 +63,9 @@ import java.util.*
 fun MeetingScreen(
     navController: NavController,
     meetingViewModel: MeetingViewModel = hiltViewModel(),
+    isBirthday: Boolean = false
     loginViewModel: LoginViewModel= hiltViewModel()
 ) {
-
-
     val context = LocalContext.current
 
     val meetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
@@ -190,6 +191,17 @@ fun MeetingScreen(
                 }
             }
         }
+
+        /*if(isBirthday){
+            // show just a popup to congratulate
+            Dialog(onDismissRequest = {  }) {
+                Surface {
+                    Box(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "Happy Birthday!")
+                    }
+                }
+            }
+        }*/
     }
 }
 
@@ -216,7 +228,7 @@ fun MeetingOrderByTeam(
 
             val dismissState = rememberDismissState(
                 confirmStateChange = {
-                    if (it == DismissValue.DismissedToEnd) {
+                    if (it == DismissValue.DismissedToStart) {
                         //navController.navigate(FeatureScreens.NewMeetingScreen.route)
                         CoroutineScope(Dispatchers.IO).launch{
                            // meetingViewModel.deleteMeeting(DeleteItem(item.id))
@@ -233,31 +245,32 @@ fun MeetingOrderByTeam(
                 }
             )
             LaunchedEffect(dismissState){
-                if (item == meetingListem.first()){
-                    dismissState.animateTo(
-                        DismissValue.DismissedToEnd,
-                        anim = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
+                if (!meetingViewModel.didAnimationExecute.value){
+                    if (item == meetingListem.first()){
+                        dismissState.animateTo(
+                            DismissValue.DismissedToStart,
+                            anim = tween(
+                                durationMillis = 400,
+                                easing = LinearOutSlowInEasing
+                            )
                         )
-                    )
-                    delay(100)
-                    dismissState.animateTo(
-                        DismissValue.Default,
-                        anim = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
+                        delay(100)
+                        dismissState.animateTo(
+                            DismissValue.Default,
+                            anim = tween(
+                                durationMillis = 400,
+                                easing = LinearOutSlowInEasing
+                            )
                         )
-                    )
+                    }
+                    meetingViewModel.didAnimationExecute.value = true
                 }
             }
 
             SwipeToDismiss(
                 state = dismissState,
-                directions = setOf(DismissDirection.StartToEnd),
-                dismissThresholds = { direction ->
-                    FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
-                },
+                directions = setOf(DismissDirection.EndToStart),
+                dismissThresholds = { FractionalThreshold(0.3f) },
                 background = { SwipeBackground(dismissState = dismissState) },
                 dismissContent = {
                     MeetingCardView(
@@ -358,7 +371,6 @@ fun DateTimePicker(
                 monthSelection = true,
                 yearSelection = true,
                 style = CalendarStyle.MONTH,
-                //disabledDates = listOf(LocalDate.now().plusDays(7))
             ),
             selection = CalendarSelection.Date { date ->
                 calenderValue = date.toString()
@@ -412,7 +424,6 @@ fun DateTimePicker(
                     Icon(
                         painter = painterResource(R.drawable.calendar),
                         contentDescription = null,
-
                         )
                 }
             }
@@ -451,40 +462,6 @@ fun DateTimePicker(
                     )
                 }
             }
-        )
-    }
-}
-
-
-@Composable
-@OptIn(ExperimentalMaterialApi::class)
-fun SwipeBackground(dismissState: DismissState) {
-    val color by animateColorAsState(
-        when (dismissState.targetValue) {
-            DismissValue.Default -> Color.Transparent
-            DismissValue.DismissedToEnd -> Color.White
-            DismissValue.DismissedToStart -> Color.White
-        }
-    )
-    val alignment = Alignment.CenterStart
-
-    val icon = Icons.Default.Done
-
-    val scale by animateFloatAsState(
-        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(horizontal = 20.dp),
-        contentAlignment = alignment
-    ) {
-        Icon(
-            icon,
-            contentDescription = "Localized description",
-            modifier = Modifier.scale(scale)
         )
     }
 }

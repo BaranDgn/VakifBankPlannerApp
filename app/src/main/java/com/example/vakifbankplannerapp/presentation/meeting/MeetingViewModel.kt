@@ -30,6 +30,8 @@ class MeetingViewModel@Inject constructor(
     private var repo : PlannerRepository
 ) : ViewModel() {
 
+    val didAnimationExecute = mutableStateOf(false)
+
     private val _searchWidgetState : MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
     val searchWidgetState : State<SearchWidgetState>  =_searchWidgetState
 
