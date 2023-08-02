@@ -53,14 +53,22 @@ fun EventScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    val events = produceState<Resource<Event>>(initialValue = Resource.Loading()){
+    /*var events = produceState<Resource<Event>>(initialValue = Resource.Loading()){
         value = eventViewModel.loadEvents()
-    }.value
+    }.value*/
+    var events by remember { mutableStateOf<Resource<Event>>(Resource.Loading()) }
 
     var selectedEvent by remember { mutableStateOf<EventItem?>(null) }
 
     val searchWidgetState by eventViewModel.searchWidgetStateForEvent
     val searchTextState by eventViewModel.searchTextStateForEvent
+
+    LaunchedEffect(
+        Unit
+    ){
+        events = eventViewModel.loadEvents()
+    }
+
     Scaffold(
         topBar = {
             MainSearchBar(
@@ -72,7 +80,12 @@ fun EventScreen(
                 onCloseClicked = {
                     eventViewModel.updateSearchWidgetStateForEvent(newValue = SearchWidgetState.CLOSED)
                 },
-                onSearchClicked = {},
+                onSearchClicked = {
+                    events = Resource.Loading()
+                    scope.launch {
+                        events = eventViewModel.searchEvents(SearchEvent(it))
+                    }
+                },
                 onSearchTriggered = { eventViewModel.updateSearchWidgetStateForEvent(newValue = SearchWidgetState.OPENED)
                 },
                 text = "Events"

@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.vakifbankplannerapp.data.model.AddEventItem
 import com.example.vakifbankplannerapp.data.model.DeleteEvent
 import com.example.vakifbankplannerapp.data.model.Event
+import com.example.vakifbankplannerapp.data.model.SearchEvent
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
@@ -33,6 +33,11 @@ class EventViewModel@Inject constructor(
     suspend fun loadEvents() : Resource<Event>
     {
         return repoEvent.getEvent()
+    }
+
+    suspend fun searchEvents(searchText: SearchEvent) : Resource<Event>
+    {
+        return repoEvent.searchEvent(searchText)
     }
 
 

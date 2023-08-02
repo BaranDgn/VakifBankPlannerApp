@@ -30,6 +30,7 @@ import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
+import com.example.vakifbankplannerapp.data.model.SearchMeeting
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankplannerapp.presentation.authantication.LoginViewModel
@@ -63,9 +64,12 @@ fun MeetingScreen(
 ) {
     val context = LocalContext.current
 
-    val meetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
+    /*val meetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
         value = meetingViewModel.loadMeetings()
-    }.value
+    }.value*/
+
+    var meetings by remember {mutableStateOf<Resource<MeetingItem>>(Resource.Loading())}
+
     val searchWidgetState by meetingViewModel.searchWidgetState
     val searchTextState by meetingViewModel.searchTextState
 
@@ -74,6 +78,10 @@ fun MeetingScreen(
     val scope = rememberCoroutineScope()
 
     val isAdminCheck = loginViewModel.isAdmin
+
+    LaunchedEffect(Unit){
+        meetings = meetingViewModel.loadMeetings()
+    }
 
     Scaffold(
         topBar = {
@@ -87,7 +95,10 @@ fun MeetingScreen(
                          meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
                      },
                      onSearchClicked = {
-                        meetingViewModel.searchBasedOnTeamName(searchTextState)
+                         meetings = Resource.Loading()
+                         scope.launch{
+                             meetings = meetingViewModel.searchMeetings(SearchMeeting(teamName = it))
+                         }
                      },
                      onSearchTriggered = { meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                      },

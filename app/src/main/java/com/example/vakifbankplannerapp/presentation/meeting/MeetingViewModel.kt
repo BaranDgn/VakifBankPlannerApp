@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
+import com.example.vakifbankplannerapp.data.model.SearchMeeting
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
@@ -52,6 +53,11 @@ class MeetingViewModel@Inject constructor(
     //Fetch Meetings
     suspend fun loadMeetings() : Resource<MeetingItem>{
         return repo.getMeeting()
+    }
+
+    //Search Meetings
+    suspend fun searchMeetings(searchText: SearchMeeting) : Resource<MeetingItem>{
+        return repo.searchMeeting(searchText)
     }
 
     //Delete Meeting
