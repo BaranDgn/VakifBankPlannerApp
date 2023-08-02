@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.vakifbankplannerapp.domain.util.AdminControl
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -34,7 +35,9 @@ fun EventCardView(
             .fillMaxWidth()
             .padding(8.dp)
        ,
-        onClick = {onEditClicked()},
+        onClick = {
+            if(AdminControl.adminControl){
+            onEditClicked() } },
         shape = RoundedCornerShape(8.dp),
         elevation = 5.dp,
         backgroundColor = Color.White// Set the card's background color here
