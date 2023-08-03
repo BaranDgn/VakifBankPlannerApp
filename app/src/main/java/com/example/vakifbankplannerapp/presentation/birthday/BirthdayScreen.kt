@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,7 +68,7 @@ fun BirthdayScreen(
     }.value
 
     var tabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Today", "Incoming")
+    val tabs = listOf(LocalContext.current.getString(R.string.today), LocalContext.current.getString(R.string.incoming))
 
     var hasBirhtyday by remember { mutableStateOf(false) }
 
@@ -119,7 +120,7 @@ fun BirthdayScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ){
                             Text(
-                                "Doğum Günün Kultu Olsun",
+                                stringResource(id = R.string.happy_birthday),
                                 fontSize = 50.sp,
                                 textAlign = TextAlign.Center,
                                 fontFamily = Great_Vibes,
@@ -137,7 +138,7 @@ fun BirthdayScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                "Bugün Doğum Günü Olan Yok",
+                                stringResource(id = R.string.no_birthday),
                                 fontSize = 50.sp,
                                 textAlign = TextAlign.Center,
                                 fontFamily = Great_Vibes
@@ -148,7 +149,7 @@ fun BirthdayScreen(
                 else{
                     hasBirhtyday = false
                     Text(
-                        "Bugün Doğum Günü Olan Yok",
+                        stringResource(id = R.string.no_birthday),
                         fontSize = 50.sp,
                         textAlign = TextAlign.Center,
                         fontFamily = Great_Vibes
@@ -162,7 +163,7 @@ fun BirthdayScreen(
                 CircularProgressIndicator(color = Color.Black)
             }
         }
-        if (hasBirhtyday){
+       /* if (hasBirhtyday){
             KonfettiView(
                 modifier = Modifier.fillMaxSize(),
                 parties = listOf(
@@ -177,7 +178,7 @@ fun BirthdayScreen(
                     )
                 )
             )
-        }
+        }*/
     }
 
     @Composable
@@ -197,7 +198,7 @@ fun BirthdayScreen(
                         }
                     } else {
                         Text(
-                            "No Birthday in 1 Month",
+                            stringResource(id = R.string.no_birthday_1_month),
                             fontSize = 50.sp,
                             textAlign = TextAlign.Center,
                             fontFamily = Great_Vibes
@@ -206,7 +207,7 @@ fun BirthdayScreen(
                 }
                 else{
                     Text(
-                        "No Birthday in 1 Month",
+                        stringResource(id = R.string.no_birthday),
                         fontSize = 50.sp,
                         textAlign = TextAlign.Center,
                         fontFamily = Great_Vibes
@@ -261,20 +262,22 @@ fun BirthdayScreen(
             }
         }
     }
-    /*KonfettiView(
-        modifier = Modifier.fillMaxSize(),
-        parties = listOf(
-            Party(
-                speed = 0f,
-                maxSpeed = 30f,
-                damping = 0.9f,
-                spread = 360,
-                colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                position = Position.Relative(0.5, 0.0),
-                emitter = Emitter(duration = 1, TimeUnit.SECONDS).max(100)
+    if(hasBirhtyday){
+        KonfettiView(
+            modifier = Modifier.fillMaxSize(),
+            parties = listOf(
+                Party(
+                    speed = 0f,
+                    maxSpeed = 30f,
+                    damping = 0.9f,
+                    spread = 360,
+                    colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                    position = Position.Relative(0.5, 0.0),
+                    emitter = Emitter(duration = 1, TimeUnit.SECONDS).max(100)
+                )
             )
         )
-    )*/
+    }
 }
 
 @Composable

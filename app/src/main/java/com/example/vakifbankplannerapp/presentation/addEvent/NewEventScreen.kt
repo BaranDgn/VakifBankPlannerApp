@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -100,14 +101,14 @@ fun NewEventScreen(
                                 contentDescription = "",
                             )
                             //Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Back", fontSize = 18.sp)
+                            Text(text = stringResource(id = R.string.back), fontSize = 18.sp)
                         }
 
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                             .fillMaxSize()
                             .padding(68.dp, 0.dp, 0.dp, 0.dp)){
 
-                            Text(text = "Add New Event", fontSize = 20.sp, fontWeight = FontWeight.SemiBold,  maxLines= 1, textAlign = TextAlign.Center)
+                            Text(text = stringResource(id = R.string.add_new_event), fontSize = 20.sp, fontWeight = FontWeight.SemiBold,  maxLines= 1, textAlign = TextAlign.Center)
                         }
                     }
 
@@ -126,12 +127,12 @@ fun NewEventScreen(
         ) {
 
             TextFieldForEvent(
-                label = "Event Name",
+                label = stringResource(id = R.string.event_name),
                 inputType = InputTypeForAddingEvents.EventName,
                 onValueChange =  { teamNameValue = it } )
 
             TextFieldForEvent(
-                label = "Event Type",
+                label = stringResource(R.string.event_type),
                 inputType = InputTypeForAddingEvents.EventType,
                 onValueChange =  { eventTypeValue = it } )
 
@@ -141,7 +142,7 @@ fun NewEventScreen(
             )
 
             TextFieldForEvent(
-                label = "Meeting Notes",
+                label = stringResource(R.string.event_notes),
                 inputType = InputTypeForAddingEvents.EventNotes,
                 multiline = true,
                 modifier = Modifier.height(120.dp), // Adjust the height as needed
@@ -177,7 +178,7 @@ fun NewEventScreen(
                         popUpTo(FeatureScreens.NewEventScreen.route){inclusive = true}
                     }
                 }else{
-                    Toast.makeText(context, "You need to make sure all the fields are filled", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, R.string.make_sure_all_fields_full, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -244,7 +245,7 @@ fun EventButton(
         ),
         enabled = eventDataIsValid
     ) {
-        Text(text = "SAVE EVENT", modifier = Modifier.padding(vertical = 8.dp))
+        Text(text = stringResource(id = R.string.save_event), modifier = Modifier.padding(vertical = 8.dp))
     }
 
 }
@@ -302,7 +303,7 @@ fun DateTimePickerForEvent(
                 .shadow(1.dp)
 
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Date") },
+            label = { Text(text = stringResource(id = R.string.event_date)) },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -334,7 +335,7 @@ fun DateTimePickerForEvent(
                 .shadow(1.dp)
 
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Time") },
+            label = { Text(text = stringResource(id = R.string.event_time)) },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -360,33 +361,33 @@ sealed class InputTypeForAddingEvents(
     val visualTransformation: VisualTransformation
 ) {
     object EventName : InputTypeForAddingEvents(
-        label = "Event Name",
+        label = "Etkinlik Adı",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.None),
         visualTransformation = VisualTransformation.None
     )
 
     object EventType : InputTypeForAddingEvents(
-        label = "Event Type",
+        label = "Etkinlik Tipi",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object EventDate : InputTypeForAddingEvents(
-        label = "Event Date",
+        label = "Etkinlik Tarihi",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object EventTime : InputTypeForAddingEvents(
-        label = "Event Time",
+        label = "Etkinlik Saati",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object EventNotes : InputTypeForAddingEvents(
-        label = "Meeting Notes",
+        label = "Etkinlik Notları",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object Notes : InputTypeForAddingEvents(
-        label = "Meeting Notes",
+        label = "Etkinlik Notları",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )

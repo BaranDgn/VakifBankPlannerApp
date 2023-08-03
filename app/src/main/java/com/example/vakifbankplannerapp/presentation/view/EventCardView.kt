@@ -17,12 +17,14 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.domain.util.AdminControl
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 
@@ -91,8 +93,8 @@ fun EventCardView(
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Etkinlik Notları: ",
-                                style = TextStyle(color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                                text = stringResource(id = R.string.event_notes_),
+                                style = TextStyle(color = Color.Black, fontSize = 14.sp,fontWeight = FontWeight.SemiBold)
                             )
                         }
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -93,7 +94,7 @@ fun EventScreen(
                 },
                 onSearchTriggered = { eventViewModel.updateSearchWidgetStateForEvent(newValue = SearchWidgetState.OPENED)
                 },
-                text = "Events"
+                text = stringResource(id = R.string.events_title)
             )
         },
         floatingActionButton = {
@@ -104,7 +105,7 @@ fun EventScreen(
                     {
                         if(AdminControl.adminControl){
                             ExtendedFloatingActionButton(
-                                text = { Text("Add Event") },
+                                text = { Text(stringResource(id = R.string.add_events)) },
                                 icon = {
                                     Icon(Icons.Default.Add, contentDescription = "Add")
                                 },
@@ -120,7 +121,7 @@ fun EventScreen(
                         },
                     {
                         ExtendedFloatingActionButton(
-                            text = { Text("Previous Events") },
+                            text = { Text(stringResource(id = R.string.previous_events)) },
                             icon = {
                                 Icon(painter = painterResource(R.drawable.outline_history_24), contentDescription = "History")
                             },
@@ -276,8 +277,8 @@ fun EventListing(
                         showDeleteDialog = false
                         itemToDelete = null
                     },
-                    title = { Text("Delete Item") },
-                    text = { Text("Are you sure you want to delete this item?") },
+                    title = { Text(stringResource(id = R.string.delete_item)) },
+                    text = { Text(stringResource(id = R.string.delete_item_confirm)) },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -293,7 +294,7 @@ fun EventListing(
                             }
 
                         ) {
-                            Text("Confirm")
+                            Text(stringResource(id = R.string.confirm))
                         }
                     },
                     dismissButton = {
@@ -304,7 +305,7 @@ fun EventListing(
                                 itemToDelete = null
                             }
                         ) {
-                            Text("Cancel")
+                            Text(stringResource(id = R.string.cancel))
                         }
                     }
                 )

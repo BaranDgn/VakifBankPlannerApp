@@ -9,17 +9,17 @@ sealed class BottomBarScreen(
 ) {
     object Meeting : BottomBarScreen(
         route = "Meeting",
-        title = "Meeting",
+        title = "Toplantılar",
         icon = R.drawable.calendar
     )
     object Event : BottomBarScreen(
         route = "Event",
-        title = "Event",
+        title = "Etkinlikler",
         icon = R.drawable.event
     )
     object Birthday : BottomBarScreen(
         route = "Birthday",
-        title = "Birthday",
+        title = "Doğum Günü",
         icon = R.drawable.cake
     )
 

@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,8 @@ fun BirthdayCarView(
             contentScale = ContentScale.FillBounds
         )
         Row(modifier = Modifier
-            .height(160.dp).padding(bottom = 32.dp)
+            .height(160.dp)
+            .padding(bottom = 32.dp)
             ){
             Box(modifier = Modifier
                 .fillMaxHeight()
@@ -67,7 +69,9 @@ fun BirthdayCarView(
             ){
 
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(bottom=16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -76,7 +80,7 @@ fun BirthdayCarView(
                         style = TextStyle(color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Normal)
                     )
                     Text(
-                        text = "$howManyDayLeft gün kaldı",
+                        text = "$howManyDayLeft ${stringResource(id = R.string.days_left)}",
                         style = TextStyle(color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Light)
                     )
                 }

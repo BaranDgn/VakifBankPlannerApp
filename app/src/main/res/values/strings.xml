@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">VakifbankPlannerApp</string>
+    <string name="events_title">Etkinlikler</string>
+    <string name="add_events">Etkinlik Ekle</string>
+    <string name="add_new_event">Yeni Etkinlik Ekle</string>
+    <string name="update_event">Etkinliği Güncelle</string>
+    <string name="previous_events">Geçmiş Etkinlikler</string>
+    <string name="event_notes_">Etkinlik Notları: </string>
+    <string name="event_notes">Etkinlik Notları</string>
+    <string name="event_name">Etkinlik Adı</string>
+    <string name="event_type">Etkinlik Tipi</string>
+    <string name="event_date">Etkinlik Tarihi</string>
+    <string name="event_time">Etkinlik Zamanı</string>
+    <string name="save_event">ETKİNLİĞİ KAYDET</string>
+    <string name="add_meeting">Toplantı Ekle</string>
+    <string name="delete_item">Eşyayı Sil</string>
+    <string name="delete_item_confirm">Eşyayı Silmek İstediğinizden Emin misiniz ?</string>
+    <string name="confirm">Onayla</string>
+    <string name="cancel">İptal Et</string>
+    <string name="back">Geri</string>
+    <string name="today">Bugün</string>
+    <string name="update">Güncelle</string>
+    <string name="incoming">Gelecek</string>
+    <string name="happy_birthday">Doğum Günün Kultu Olsun</string>
+    <string name="no_birthday">Bugün Doğum Günü Olan Yok</string>
+    <string name="no_birthday_1_month">1 Ay İçersinde Doğum Günü Yok</string>
+    <string name="make_sure_all_fields_full">Tüm alanların dolu olduğundan emin olmalısınız</string>
+    <string name="meetings_title">Toplantılar</string>
+    <string name="days_left">gün kaldı</string>
 </resources>

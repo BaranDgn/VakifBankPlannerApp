@@ -13,7 +13,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -58,13 +60,13 @@ fun UpdatePopUpForEvent(
 
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Update Event") },
+            title = { Text(stringResource(id = R.string.update_event)) },
             text = {
                 Column {
 
                     // Event Name TextField
                     TextFieldForUpdateEvent(
-                        label = "Event Name",
+                        label = LocalContext.current.getString(R.string.event_name),
                         value = updatedEventName,
                         inputType = InputTypeForUpdatingEvent.UpdateEventName
                     ) { updatedEventName = it }
@@ -78,14 +80,14 @@ fun UpdatePopUpForEvent(
                     )
                     // Meeting Content TextField
                     TextFieldForUpdateEvent(
-                        label = "Event Type",
+                        label = LocalContext.current.getString(R.string.event_type),
                         value = updateEventType,
                         inputType = InputTypeForUpdatingEvent.UpdateEventType,
                     ) { updateEventType = it }// Adjust the height as needed
 
                     //Meeting Notes
                     TextFieldForUpdateEvent(
-                        label = "Meeting Notes",
+                        label = LocalContext.current.getString(R.string.event_notes),
                         value = updatedEventNotes,
                         inputType = InputTypeForUpdatingEvent.UpdateEventNotes,
                         multiline = true,
@@ -116,7 +118,7 @@ fun UpdatePopUpForEvent(
                         onDismiss()
                     }
                 ) {
-                    Text("Update")
+                    Text(stringResource(id = R.string.update))
                 }
             },
             dismissButton = {
@@ -126,7 +128,7 @@ fun UpdatePopUpForEvent(
                         onDismiss()
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id =R.string.cancel))
                 }
             }
         )
@@ -257,7 +259,7 @@ fun DateTimePickerForUpdateEvent(
                     calenderState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Date") },
+            label = { Text(text = stringResource(id = R.string.event_date)) },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -293,7 +295,7 @@ fun DateTimePickerForUpdateEvent(
                     clockState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Time") },
+            label = { Text(text = stringResource(id = R.string.event_time)) },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -322,17 +324,17 @@ sealed class InputTypeForUpdatingEvent(
 ) {
 
     object UpdateEventName : InputTypeForUpdatingEvent(
-        label = "Event Name",
+        label = "Etkinlik Adı",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object UpdateEventType : InputTypeForUpdatingEvent(
-        label = "Event Type",
+        label = "Etkinlik Tipi",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object UpdateEventNotes : InputTypeForUpdatingEvent(
-        label = "Event Notes",
+        label = "Etkinlik Notları",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )

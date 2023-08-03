@@ -74,7 +74,7 @@ fun PastMeetingScreen(
                 },
                 onSearchTriggered = { pastMeetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                 },
-                text="Past Meetings",
+                text="Geçmiş Toplantılar",
                 includeBack = true,
                 navController = navController
             )
