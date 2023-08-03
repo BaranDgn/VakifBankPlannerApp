@@ -26,9 +26,8 @@ import com.example.vakifbankplannerapp.data.model.Event
 import com.example.vakifbankplannerapp.domain.util.AdminControl
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
-import com.example.vakifbankkplannerapp.presentation.bottomBar.BottomBarScreen
+import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
 import com.example.vakifbankplannerapp.presentation.meeting.MeetingViewModel
-import com.example.vakifbankplannerapp.presentation.meeting.SwipeBackground
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdatePopUpForEvent
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdateViewModel
@@ -50,7 +49,6 @@ fun EventScreen(
     navController: NavHostController,
     eventViewModel : EventViewModel = hiltViewModel(),
     updateViewModel: UpdateViewModel = hiltViewModel(),
-    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
 
@@ -191,7 +189,7 @@ fun EventListing(
                         CoroutineScope(Dispatchers.IO).launch{
                             itemToDelete = DeleteItem(event.id)
                             showDeleteDialog = true
-                            meetingViewModel.refreshMeetings(navController, BottomBarScreen.Event.route)
+                            //meetingViewModel.refreshMeetings(navController, BottomBarScreen.Event.route)
                         }
                     }
                     it != DismissValue.DismissedToEnd
@@ -223,9 +221,9 @@ fun EventListing(
             if(AdminControl.adminControl){
                 SwipeToDismiss(
                     state = dismissState,
-                    directions = setOf(DismissDirection.StartToEnd),
+                    directions = setOf(DismissDirection.EndToStart),
                     dismissThresholds = { direction ->
-                        FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+                        FractionalThreshold(0.3f)
                     },
                     background = { SwipeBackground(dismissState = dismissState) },
                     dismissContent = {
@@ -250,24 +248,6 @@ fun EventListing(
                     onEditClicked = { selectedEvent = event})
             }
 
-            SwipeToDismiss(
-                state = dismissState,
-                directions = setOf(DismissDirection.EndToStart),
-                dismissThresholds = { direction ->
-                    FractionalThreshold(0.3f)
-                },
-                background = { SwipeBackground(dismissState = dismissState) },
-                dismissContent = {
-                    EventCardView(
-                        eventName = event.eventName,
-                        eventType= event.eventType,
-                        eventDateTime= tarih.tarih,
-                        eventHour = tarih.saat,
-                        meetingNotes= event.eventNotes,
-                        navController = navController,
-                        onEditClicked = { selectedEvent = event})
-                }
-            )
 
             //Alert Dialog to delete event
             if (showDeleteDialog && itemToDelete != null) {
