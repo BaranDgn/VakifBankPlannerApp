@@ -29,11 +29,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.AddEventItem
-import com.example.vakifbankplannerapp.data.model.AddMeetingItem
 import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
-import com.example.vakifbankplannerapp.presentation.navigation.HomeNavGraph
 import com.example.vakifbankplannerapp.ui.theme.Shapes
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -126,7 +124,6 @@ fun NewEventScreen(
                 .padding(8.dp),
         ) {
 
-            //  TextFieldForMeeting(label = "Team Name", inputType = InputTypeForAddingMeeting.TeamName)
             TextFieldForEvent(
                 label = "Event Name",
                 inputType = InputTypeForAddingEvents.EventName,

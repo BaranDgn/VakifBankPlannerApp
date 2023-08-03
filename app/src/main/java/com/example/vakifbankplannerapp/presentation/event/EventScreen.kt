@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.example.vakifbankplannerapp.data.model.*
 import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.Event
+import com.example.vakifbankplannerapp.domain.util.AdminControl
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankkplannerapp.presentation.bottomBar.BottomBarScreen
@@ -84,7 +85,7 @@ fun EventScreen(
                 navController = navController,
                 floatingActionButtonList = listOf(
                     {
-                        if(loginViewModel.isAdmin.value){
+                        if(AdminControl.adminControl){
                             ExtendedFloatingActionButton(
                                 text = { Text("Add Event") },
                                 icon = {
@@ -147,7 +148,7 @@ fun EventScreen(
 
                 }
                 is Resource.Loading->{
-                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.align(
+                    CircularProgressIndicator(color = Color.DarkGray, modifier = Modifier.align(
                         Alignment.CenterHorizontally))
 
                 }
@@ -188,11 +189,8 @@ fun EventListing(
                     if (it == DismissValue.DismissedToStart) {
                         //navController.navigate(FeatureScreens.NewMeetingScreen.route)
                         CoroutineScope(Dispatchers.IO).launch{
-                            // meetingViewModel.deleteMeeting(DeleteItem(item.id))
-                            //AlertToDelete(DeleteItem(item.id), meetingViewModel)
                             itemToDelete = DeleteItem(event.id)
                             showDeleteDialog = true
-                            delay(2000L)
                             meetingViewModel.refreshMeetings(navController, BottomBarScreen.Event.route)
                         }
                     }
@@ -221,6 +219,35 @@ fun EventListing(
                     }
                     eventViewModel.didAnimationExecute.value = true
                 }
+            }
+            if(AdminControl.adminControl){
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(DismissDirection.StartToEnd),
+                    dismissThresholds = { direction ->
+                        FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+                    },
+                    background = { SwipeBackground(dismissState = dismissState) },
+                    dismissContent = {
+                        EventCardView(
+                            eventName = event.eventName,
+                            eventType= event.eventType,
+                            eventDateTime= tarih.tarih,
+                            eventHour = tarih.saat,
+                            meetingNotes= event.eventNotes,
+                            navController = navController,
+                            onEditClicked = { selectedEvent = event})
+                    }
+                )
+            }else{
+                EventCardView(
+                    eventName = event.eventName,
+                    eventType= event.eventType,
+                    eventDateTime= tarih.tarih,
+                    eventHour = tarih.saat,
+                    meetingNotes= event.eventNotes,
+                    navController = navController,
+                    onEditClicked = { selectedEvent = event})
             }
 
             SwipeToDismiss(
@@ -291,7 +318,6 @@ fun EventListing(
                     onUpdate = { updatedMeeting ->
                         CoroutineScope(Dispatchers.IO).launch{
                             updateViewModel.updateEvent(updateEvent = updatedMeeting)
-                            delay(100L)
                             meetingViewModel.refreshMeetings(navController,BottomBarScreen.Event.route)
                         }
                         selectedEvent = null

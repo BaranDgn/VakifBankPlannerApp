@@ -12,10 +12,12 @@ import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.Login
 import com.example.vakifbankplannerapp.data.model.LoginResponse
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
+import com.example.vakifbankplannerapp.domain.util.AdminControl
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,12 +35,17 @@ class LoginViewModel@Inject constructor(
     private val _loadingState = MutableStateFlow(false)
     val loadingState: StateFlow<Boolean> = _loadingState
 
-    var isAdmin = mutableStateOf(true)
+    var isAdmin = mutableStateOf(false)
 
 
     fun isAdminCheck(isAdmin:Boolean) : Boolean{
         return isAdmin
     }
+    init {
+
+    }
+
+    //val adminControl = AdminControl.getAdminControlValue()
 
 
     fun checkLogin(navController: NavController, context: Context, login: Login) {
@@ -51,8 +58,11 @@ class LoginViewModel@Inject constructor(
                     val response = result.data
                     if (response != null) {
                         if (response.isSuccessfull) {
-                            isAdmin.value = response.isManager // Set the isAdmin value here
+                            //isAdmin.value = response.isManager // Set the isAdmin value here
                             //isAdminCheck(response.isManager)
+                            AdminControl.setAdminControl(response.isManager)
+                            //adminControl.adminControlValue = response.isManager
+                            isAdmin.value = response.isManager
                             navController.navigate(Graph.HOME) {
                                 popUpTo(AuthScreen.Login.route) { inclusive = true }
                             }
