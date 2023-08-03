@@ -24,12 +24,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.domain.util.AdminControl
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MeetingCardView(
-    //meetingList: List<Teams>,
     meetingName: String,
     meetingType: String,
     meetingDate: String,
@@ -97,8 +97,8 @@ fun MeetingCardView(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Meeting Content: ",
-                                style = TextStyle(color = Color.Black, fontSize = 14.sp)
+                                text = "Toplantı Konusu:",
+                                style = TextStyle(color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             )
                             Text(
                                 text = meetingContent,
@@ -134,8 +134,8 @@ fun MeetingCardView(
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            text = "Meeting Notes: ",
-                            style = TextStyle(color = Color.Black, fontSize = 14.sp)
+                            text = "Toplantı Notları: ",
+                            style = TextStyle(color = Color.Black, fontSize = 14.sp,fontWeight = FontWeight.SemiBold)
                         )
 
                         Text(

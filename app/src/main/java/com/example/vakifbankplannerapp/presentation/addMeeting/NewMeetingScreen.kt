@@ -116,14 +116,14 @@ fun NewMeetingScreen(
                                 contentDescription = "",
                             )
                             //Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Back", fontSize = 18.sp)
+                            Text(text = "Geri", fontSize = 18.sp)
                         }
 
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                             .fillMaxSize()
                             .padding(68.dp, 0.dp, 0.dp, 0.dp)){
 
-                            Text(text = "Add New Meeting", fontSize = 20.sp, fontWeight = FontWeight.SemiBold,  maxLines= 1, textAlign = TextAlign.Center)
+                            Text(text = "Yeni Toplantı Ekle", fontSize = 20.sp, fontWeight = FontWeight.SemiBold,  maxLines= 1, textAlign = TextAlign.Center)
                         }
                     }
 
@@ -145,7 +145,7 @@ fun NewMeetingScreen(
 
             //Meeting Type
             TextFieldForMeeting(
-                label = "Meeting Type",
+                label = "Toplantı türü",
                 inputType = InputTypeForAddingMeeting.MeetingType,
                 onValueChange =  { meetingTypeValue = it })
 
@@ -157,7 +157,7 @@ fun NewMeetingScreen(
 
             //Meeting Content
             TextFieldForMeeting(
-                label = "Meeting Content",
+                label = "Toplantı Konusu",
                 inputType = InputTypeForAddingMeeting.MeetingContent,
                 multiline = true,
                 modifier = Modifier.height(120.dp),
@@ -165,7 +165,7 @@ fun NewMeetingScreen(
             )
             //Meeting Notes
             TextFieldForMeeting(
-                label = "Meeting Notes",
+                label = "Toplantı Notları",
                 inputType = InputTypeForAddingMeeting.MeetingNotes,
                 multiline = true,
                 modifier = Modifier.height(120.dp),
@@ -203,7 +203,7 @@ fun NewMeetingScreen(
                         popUpTo(FeatureScreens.NewMeetingScreen.route){inclusive = true}
                     }
                 }else {
-                    Toast.makeText(context, "You need to make sure all the fields are filled", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Bütün alanların doldurduğuna emin ol, lütfen", Toast.LENGTH_LONG).show()
                 }
 
 
@@ -271,7 +271,7 @@ fun MeetingButton(
         ),
         enabled = meetingDataIsValid
     ) {
-        Text(text = "SAVE MEETING", modifier = Modifier.padding(vertical = 8.dp))
+        Text(text = "TOPLANTI KAYDET", modifier = Modifier.padding(vertical = 8.dp))
     }
 
 }
@@ -350,7 +350,7 @@ fun DateTimePicker(
                     calenderState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Date") },
+            label = { Text(text = "Toplantı Tarihi") },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -386,7 +386,7 @@ fun DateTimePicker(
                     clockState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Time") },
+            label = { Text(text = "Toplantı Saati") },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -442,7 +442,7 @@ fun DropDownMenuForTeams(
                 .onGloballyPositioned { coordinates ->
                     mTextFieldSize = coordinates.size.toSize()
                 },
-            label = { Text(text = "Team")},
+            label = { Text(text = "Takımlar")},
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -482,77 +482,35 @@ sealed class InputTypeForAddingMeeting(
     val visualTransformation: VisualTransformation
 ) {
     object TeamName : InputTypeForAddingMeeting(
-        label = "Team Name",
+        label = "Takım İsmi",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.None),
         visualTransformation = VisualTransformation.None
     )
 
     object MeetingType : InputTypeForAddingMeeting(
-        label = "Meeting Type",
+        label = "Toplantı Türü",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object MeetingDate : InputTypeForAddingMeeting(
-        label = "Meeting Date",
+        label = "Toplantı Tarihi",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object MeetingTime : InputTypeForAddingMeeting(
-        label = "Meeting Time",
+        label = "Toplantı Zamanı",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object MeetingContent : InputTypeForAddingMeeting(
-        label = "Meeting Content",
+        label = "Toplantı İçeriği",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object MeetingNotes : InputTypeForAddingMeeting(
-        label = "Meeting Notes",
+        label = "Toplantı Notları",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
 
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DateTimePickerScreen() {
-    //to trigger the dialog
-    val calenderState = rememberSheetState()
-
-    CalendarDialog(
-        state = calenderState,
-        config = CalendarConfig(
-            monthSelection = true,
-            yearSelection = true,
-            style = CalendarStyle.MONTH,
-            disabledTimeline = CalendarTimeline.PAST
-            //disabledDates = listOf(LocalDate.now().plusDays(7))
-        ),
-        selection = CalendarSelection.Date{date ->
-            //   calenderState = date.toString()
-        })
-
-    Box(){
-        calenderState.show()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ClockTimePicker(clockState : SheetState) {
-    //val clockState = rememberSheetState()
-    ClockDialog(
-        state = clockState,
-        config = ClockConfig(
-            is24HourFormat = true
-        ),
-        selection = ClockSelection.HoursMinutes{ hours, minutes ->
-            print("$hours : $minutes")
-        })
-    clockState.show()
-}
-
-
-

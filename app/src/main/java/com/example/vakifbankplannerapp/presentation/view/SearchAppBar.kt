@@ -78,7 +78,7 @@ fun SearchAppBar(
                 Text(
                     modifier = Modifier
                         .alpha(ContentAlpha.medium),
-                    text = "Search here..",
+                    text = "Arama Yap..",
                     color = Color.White
                 )
             },

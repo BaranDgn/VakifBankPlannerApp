@@ -1,5 +1,7 @@
 package com.example.vakifbankplannerapp.presentation.bottomBar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vakifbankplannerapp.presentation.navigation.HomeNavGraph
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottombarNavigation() {
 

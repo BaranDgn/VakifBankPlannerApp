@@ -67,7 +67,7 @@ fun PastEventScreen(
                 },
                 onSearchTriggered = { pastEventViewModel.updateSearchWidgetStateForEvent(newValue = SearchWidgetState.OPENED)
                 },
-                text = "Past Events",
+                text = "Geçmiş Etkinlikler",
                 includeBack = true,
                 navController = navController
             )

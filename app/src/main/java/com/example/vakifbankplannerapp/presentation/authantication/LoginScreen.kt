@@ -179,15 +179,14 @@ fun LoginScreen(
         authResource.value?.let{
             when(it){
                 is Resource.Error -> {
-                    Toast.makeText(context,"Email or password might be wrong or cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,"Sicil Numarası veya Şifre hatalı olabilir. Lütfen Kontrol ediniz.", Toast.LENGTH_SHORT).show()
                 }
                 is Resource.Loading -> {
                     CircularProgressIndicator(color = MaterialTheme.colors.secondary)
-                    //Log.e("loading", "login is loading")
                 }
                 is Resource.Success -> {
                     LaunchedEffect("",Unit){
-                        Toast.makeText(context,"Welcome to VakıfBank Planner App", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,"VakıfBank Planner Uygulamasına Hoşgeldiniz!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

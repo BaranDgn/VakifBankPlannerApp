@@ -1,6 +1,7 @@
 package com.example.vakifbankplannerapp.presentation.event
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +55,8 @@ fun EventScreen(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
 
     /*val events = produceState<Resource<Event>>(initialValue = Resource.Loading()){
         value = eventViewModel.loadEvents()
@@ -138,7 +142,7 @@ fun EventScreen(
         val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
         SwipeRefresh(
             state = swipeRefreshState,
-            onRefresh = { eventViewModel.refreshEvents(navController) }
+            onRefresh = { eventViewModel.refreshEvents(navController, BottomBarScreen.Event.route) }
         ) {
         Column(
             modifier = Modifier
@@ -158,6 +162,7 @@ fun EventScreen(
 
                 }
                 is Resource.Error->{
+                    Toast.makeText(context, "Gösterilecek Bir Etkinlik Yok",Toast.LENGTH_SHORT).show()
 
                 }
                 is Resource.Loading->{
@@ -313,7 +318,7 @@ fun EventListing(
                     onUpdate = { updatedMeeting ->
                         CoroutineScope(Dispatchers.IO).launch{
                             updateViewModel.updateEvent(updateEvent = updatedMeeting)
-                            meetingViewModel.refreshMeetings(navController,BottomBarScreen.Event.route)
+                            eventViewModel.refreshEvents(navController,BottomBarScreen.Event.route)
                         }
                         selectedEvent = null
                     }

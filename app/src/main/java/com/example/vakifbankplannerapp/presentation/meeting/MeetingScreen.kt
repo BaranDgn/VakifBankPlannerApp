@@ -80,11 +80,7 @@ fun MeetingScreen(
     val searchWidgetState by meetingViewModel.searchWidgetState
     val searchTextState by meetingViewModel.searchTextState
 
-    var meetingOfList by remember { meetingViewModel.meetingList }
-
     val scope = rememberCoroutineScope()
-
-   val isAdminCheck = loginViewModel.isAdmin
 
     LaunchedEffect(Unit){
         meetings = meetingViewModel.loadMeetings()
@@ -109,7 +105,7 @@ fun MeetingScreen(
                      },
                      onSearchTriggered = { meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
                      },
-                     text="Meetings"
+                     text="Toplantılar"
                  )
         },
 
@@ -120,7 +116,7 @@ fun MeetingScreen(
                    {
                        if(AdminControl.adminControl){
                            ExtendedFloatingActionButton(
-                               text = { Text("Add Meeting") },
+                               text = { Text("Toplantı ekle") },
                                icon = {
                                    Icon(Icons.Default.Add, contentDescription = "Add")
                                },
@@ -138,7 +134,7 @@ fun MeetingScreen(
                    },
                    {
                        ExtendedFloatingActionButton(
-                           text = { Text("Previous Meetings") },
+                           text = { Text("Geçmiş Toplantılar") },
                            icon = {
                                Icon(painter = painterResource(R.drawable.outline_history_24), contentDescription = "History")
                            },
@@ -178,7 +174,6 @@ fun MeetingScreen(
                     is Resource.Success->{
                         val meeting = meetings.data
                         if (meeting != null) {
-                            //MeetingOrderByTeam(navController = navController, meetingListem = meeting)
                             MeetingOrderByTeam(
                                 navController = navController,
                                 meetingListem = meeting,
@@ -189,7 +184,7 @@ fun MeetingScreen(
                         }
                     }
                     is Resource.Error->{
-                        Toast.makeText(context, "There is no Meeting to Show", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Gösterilecek Toplantı yok", Toast.LENGTH_SHORT).show()
                     }
                     is Resource.Loading->{
                         CircularProgressIndicator(color = Color.Black, modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -306,8 +301,8 @@ fun MeetingOrderByTeam(
                         showDeleteDialog = false
                         itemToDelete = null
                     },
-                    title = { Text("Delete Item") },
-                    text = { Text("Are you sure you want to delete this item?") },
+                    title = { Text("Toplantı Sil") },
+                    text = { Text("Bu toplantıyı silmek istediğinden emin misin?") },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -324,7 +319,7 @@ fun MeetingOrderByTeam(
                             }
 
                         ) {
-                            Text("Confirm")
+                            Text("Onayla")
                         }
                     },
                     dismissButton = {
@@ -339,7 +334,7 @@ fun MeetingOrderByTeam(
                                 //}
                             }
                         ) {
-                            Text("Cancel")
+                            Text("İptal")
                         }
                     }
                 )
@@ -363,14 +358,6 @@ fun MeetingOrderByTeam(
         }
 
     }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun getCurrentHour(): String {
-    val currentTime = LocalTime.now()
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // Use "hh:mm a" for 12-hour format with AM/PM
-    return currentTime.format(formatter)
 }
 
 @Composable
@@ -433,7 +420,7 @@ fun DateTimePicker(
                     calenderState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Date") },
+            label = { Text(text = "Toplantı Tarihi") },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -469,7 +456,7 @@ fun DateTimePicker(
                     clockState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Time") },
+            label = { Text(text = "Toplantı Saati") },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -489,38 +476,3 @@ fun DateTimePicker(
         )
     }
 }
-
-
-/*
-@Composable
-@OptIn(ExperimentalMaterialApi::class)
-fun SwipeBackground(dismissState: DismissState) {
-    val color by animateColorAsState(
-        when (dismissState.targetValue) {
-            DismissValue.Default -> Color.Transparent
-            DismissValue.DismissedToEnd -> Color.White
-            DismissValue.DismissedToStart -> Color.White
-        }
-    )
-    val alignment = Alignment.CenterStart
-
-    val icon = Icons.Default.Done
-
-    val scale by animateFloatAsState(
-        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(horizontal = 20.dp),
-        contentAlignment = alignment
-    ) {
-        Icon(
-            icon,
-            contentDescription = "Localized description",
-            modifier = Modifier.scale(scale)
-        )
-    }
-}*/

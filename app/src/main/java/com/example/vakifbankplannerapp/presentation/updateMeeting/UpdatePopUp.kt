@@ -75,7 +75,7 @@ fun MeetingUpdatePopup(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Update Meeting") },
+        title = { Text("Toplantıyı Güncelle") },
         text = {
             Column {
                 // Team Name DropdownMenu
@@ -85,7 +85,7 @@ fun MeetingUpdatePopup(
                 )
                 // Meeting Name TextField
                 TextFieldForUpdate(
-                    label = "Meeting Type",
+                    label = "Toplantı Türü",
                     value = updatedMeetingName,
                     inputType = InputTypeForUpdatingMeeting.UpdateMeetingType
                 ) { updatedMeetingName = it }
@@ -98,7 +98,7 @@ fun MeetingUpdatePopup(
                 )
                 // Meeting Content TextField
                 TextFieldForUpdate(
-                    label = "Meeting Content",
+                    label = "Toplantı Konusu",
                     value = updatedMeetingContext,
                     inputType = InputTypeForUpdatingMeeting.UpdateMeetingContent,
                     multiline = true,
@@ -107,7 +107,7 @@ fun MeetingUpdatePopup(
 
                 //Meeting Notes
                 TextFieldForUpdate(
-                    label = "Meeting Notes",
+                    label = "Toplantı Notları",
                     value = updatedMeetingContent,
                     inputType = InputTypeForUpdatingMeeting.UpdateMeetingNotes,
                     multiline = true,
@@ -136,7 +136,7 @@ fun MeetingUpdatePopup(
                     onDismiss()
                 }
             ) {
-                Text("Update")
+                Text("Güncelle")
             }
         },
         dismissButton = {
@@ -146,7 +146,7 @@ fun MeetingUpdatePopup(
                     onDismiss()
                 }
             ) {
-                Text("Cancel")
+                Text("İptal")
             }
         }
     )
@@ -279,7 +279,7 @@ fun DateTimePickerForUpdate(
                     calenderState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Date") },
+            label = { Text(text = "Toplantı Tarihi") },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -315,7 +315,7 @@ fun DateTimePickerForUpdate(
                     clockState.show()
                 }
                 .focusRequester(focusRequester = FocusRequester()),
-            label = { Text(text = "Meeting Time") },
+            label = { Text(text = "Toplantı Saati") },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -372,7 +372,7 @@ fun DropDownMenuForUpdateTeams(
                 .onGloballyPositioned { coordinates ->
                     mTextFieldSize = coordinates.size.toSize()
                 },
-            label = { Text(text = "Team")},
+            label = { Text(text = "Takımlar")},
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
@@ -431,17 +431,17 @@ sealed class InputTypeForUpdatingMeeting(
 ) {
 
     object UpdateMeetingType : InputTypeForUpdatingMeeting(
-        label = "Meeting Type",
+        label = "Toplantı Türü",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object UpdateMeetingContent : InputTypeForUpdatingMeeting(
-        label = "Meeting Content",
+        label = "Toplantı Konusu",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )
     object UpdateMeetingNotes : InputTypeForUpdatingMeeting(
-        label = "Meeting Notes",
+        label = "Toplantı Notları",
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         visualTransformation = VisualTransformation.None
     )

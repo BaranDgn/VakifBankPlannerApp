@@ -63,11 +63,11 @@ class EventViewModel@Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun refreshEvents(navController: NavController){
+    fun refreshEvents(navController: NavController, route :String){
         viewModelScope.launch {
             _isLoading.value = true
             delay(2000L)
-            navController.navigate(BottomBarScreen.Event.route)
+            navController.navigate(route)
             _isLoading.value = false
         }
     }

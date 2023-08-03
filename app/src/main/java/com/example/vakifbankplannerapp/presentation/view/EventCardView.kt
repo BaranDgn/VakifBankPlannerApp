@@ -91,8 +91,8 @@ fun EventCardView(
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Event Notes: ",
-                                style = TextStyle(color = Color.Black, fontSize = 14.sp)
+                                text = "Etkinlik Notları: ",
+                                style = TextStyle(color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             )
                         }
 
