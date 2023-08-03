@@ -20,27 +20,23 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-
 import com.example.vakifbankplannerapp.data.model.*
 import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.Event
 import com.example.vakifbankplannerapp.domain.util.AdminControl
-
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
-import com.example.vakifbankplannerapp.presentation.authantication.LoginViewModel
-import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
+import com.example.vakifbankkplannerapp.presentation.bottomBar.BottomBarScreen
 import com.example.vakifbankplannerapp.presentation.meeting.MeetingViewModel
 import com.example.vakifbankplannerapp.presentation.meeting.SwipeBackground
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
-import com.example.vakifbankplannerapp.presentation.updateMeeting.MeetingUpdatePopup
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdatePopUpForEvent
 import com.example.vakifbankplannerapp.presentation.updateMeeting.UpdateViewModel
 import com.example.vakifbankplannerapp.presentation.view.EventCardView
 import com.example.vakifbankplannerapp.presentation.view.ExpandableFAB
 import com.example.vakifbankplannerapp.presentation.view.MainSearchBar
-import com.example.vakifbankplannerapp.presentation.view.MeetingCardView
 import com.example.vakifbankplannerapp.presentation.view.SearchWidgetState
+import com.example.vakifbankplannerapp.presentation.view.SwipeBackground
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.CoroutineScope
@@ -190,7 +186,7 @@ fun EventListing(
 
             val dismissState = rememberDismissState(
                 confirmStateChange = {
-                    if (it == DismissValue.DismissedToEnd) {
+                    if (it == DismissValue.DismissedToStart) {
                         //navController.navigate(FeatureScreens.NewMeetingScreen.route)
                         CoroutineScope(Dispatchers.IO).launch{
                             itemToDelete = DeleteItem(event.id)
@@ -203,22 +199,25 @@ fun EventListing(
             )
 
             LaunchedEffect(dismissState){
-                if (event == eventList.first()){
-                    dismissState.animateTo(
-                        DismissValue.DismissedToEnd,
-                        anim = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
+                if (!eventViewModel.didAnimationExecute.value){
+                    if (event == eventList.first()){
+                        dismissState.animateTo(
+                            DismissValue.DismissedToStart,
+                            anim = tween(
+                                durationMillis = 400,
+                                easing = LinearOutSlowInEasing
+                            )
                         )
-                    )
-                    delay(100)
-                    dismissState.animateTo(
-                        DismissValue.Default,
-                        anim = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
+                        delay(100)
+                        dismissState.animateTo(
+                            DismissValue.Default,
+                            anim = tween(
+                                durationMillis = 400,
+                                easing = LinearOutSlowInEasing
+                            )
                         )
-                    )
+                    }
+                    eventViewModel.didAnimationExecute.value = true
                 }
             }
             if(AdminControl.adminControl){
@@ -251,6 +250,24 @@ fun EventListing(
                     onEditClicked = { selectedEvent = event})
             }
 
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.EndToStart),
+                dismissThresholds = { direction ->
+                    FractionalThreshold(0.3f)
+                },
+                background = { SwipeBackground(dismissState = dismissState) },
+                dismissContent = {
+                    EventCardView(
+                        eventName = event.eventName,
+                        eventType= event.eventType,
+                        eventDateTime= tarih.tarih,
+                        eventHour = tarih.saat,
+                        meetingNotes= event.eventNotes,
+                        navController = navController,
+                        onEditClicked = { selectedEvent = event})
+                }
+            )
 
             //Alert Dialog to delete event
             if (showDeleteDialog && itemToDelete != null) {
@@ -284,6 +301,7 @@ fun EventListing(
                             onClick = {
                                 // Close the dialog without deleting the item
                                 showDeleteDialog = false
+                                itemToDelete = null
                             }
                         ) {
                             Text("Cancel")
@@ -309,4 +327,8 @@ fun EventListing(
 
         }
     }
+}
+
+fun deleteItemFromList(item: DeleteItem, list: Event) {
+
 }

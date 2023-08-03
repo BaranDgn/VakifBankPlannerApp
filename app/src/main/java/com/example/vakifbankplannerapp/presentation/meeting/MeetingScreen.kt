@@ -26,10 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vakifbankplannerapp.R
+import com.example.vakifbankplannerapp.data.model.Birthday
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
@@ -64,10 +66,9 @@ import java.util.*
 fun MeetingScreen(
     navController: NavController,
     meetingViewModel: MeetingViewModel = hiltViewModel(),
+    isBirthday: Boolean = false
     loginViewModel: LoginViewModel= hiltViewModel()
 ) {
-
-
     val context = LocalContext.current
 
     val meetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
@@ -198,6 +199,17 @@ fun MeetingScreen(
                 }
             }
         }
+
+        /*if(isBirthday){
+            // show just a popup to congratulate
+            Dialog(onDismissRequest = {  }) {
+                Surface {
+                    Box(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "Happy Birthday!")
+                    }
+                }
+            }
+        }*/
     }
 }
 
@@ -223,7 +235,7 @@ fun MeetingOrderByTeam(
             val tarih = ZamanArrangement(item.meetingDate).getOnlyDate()
 
             val dismissState = rememberDismissState(
-                confirmStateChange = {
+                confirmStateChange = 
                     if(AdminControl.adminControl){
                         if (it == DismissValue.DismissedToEnd) {
                             //navController.navigate(FeatureScreens.NewMeetingScreen.route)
@@ -236,6 +248,17 @@ fun MeetingOrderByTeam(
                                 //delay(2000L)
                                 //meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route)
                             }
+
+                    if (it == DismissValue.DismissedToStart) {
+                        //navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                        CoroutineScope(Dispatchers.IO).launch{
+                           // meetingViewModel.deleteMeeting(DeleteItem(item.id))
+                            //AlertToDelete(DeleteItem(item.id), meetingViewModel)
+                            itemToDelete = DeleteItem(item.id)
+                            showDeleteDialog = true
+                            //TEMPORARY SOLUTION
+                            //delay(2000L)
+                            //meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route)
                         }
                     }
 
@@ -243,9 +266,16 @@ fun MeetingOrderByTeam(
                 }
             )
             LaunchedEffect(dismissState){
+
                     if (item == meetingListem.first()){
                         dismissState.animateTo(
                             DismissValue.DismissedToEnd,
+
+                if (!meetingViewModel.didAnimationExecute.value){
+                    if (item == meetingListem.first()){
+                        dismissState.animateTo(
+                            DismissValue.DismissedToStart,
+
                             anim = tween(
                                 durationMillis = 400,
                                 easing = LinearOutSlowInEasing
@@ -260,6 +290,7 @@ fun MeetingOrderByTeam(
                             )
                         )
                     }
+
             }
 
             if(AdminControl.adminControl){
@@ -296,6 +327,29 @@ fun MeetingOrderByTeam(
                 )
             }
 
+
+                    meetingViewModel.didAnimationExecute.value = true
+                }
+            }
+
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.EndToStart),
+                dismissThresholds = { FractionalThreshold(0.3f) },
+                background = { SwipeBackground(dismissState = dismissState) },
+                dismissContent = {
+                    MeetingCardView(
+                        meetingName = item.teamName,
+                        meetingType = item.meetingName,
+                        meetingDate = tarih.tarih,
+                        meetingClock = tarih.saat,
+                        meetingContent = item.meetingContext,
+                        meetingNotes = item.meetingContent,
+                        navController = navController,
+                        onEditClicked = { selectedMeeting = item}
+                    )
+                }
+            )
 
             //Alert Dialog to delete meeting
             if (showDeleteDialog && itemToDelete != null) {
@@ -394,7 +448,6 @@ fun DateTimePicker(
                 monthSelection = true,
                 yearSelection = true,
                 style = CalendarStyle.MONTH,
-                //disabledDates = listOf(LocalDate.now().plusDays(7))
             ),
             selection = CalendarSelection.Date { date ->
                 calenderValue = date.toString()
@@ -448,7 +501,6 @@ fun DateTimePicker(
                     Icon(
                         painter = painterResource(R.drawable.calendar),
                         contentDescription = null,
-
                         )
                 }
             }
@@ -487,40 +539,6 @@ fun DateTimePicker(
                     )
                 }
             }
-        )
-    }
-}
-
-
-@Composable
-@OptIn(ExperimentalMaterialApi::class)
-fun SwipeBackground(dismissState: DismissState) {
-    val color by animateColorAsState(
-        when (dismissState.targetValue) {
-            DismissValue.Default -> Color.Transparent
-            DismissValue.DismissedToEnd -> Color.White
-            DismissValue.DismissedToStart -> Color.White
-        }
-    )
-    val alignment = Alignment.CenterStart
-
-    val icon = Icons.Default.Done
-
-    val scale by animateFloatAsState(
-        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(horizontal = 20.dp),
-        contentAlignment = alignment
-    ) {
-        Icon(
-            icon,
-            contentDescription = "Localized description",
-            modifier = Modifier.scale(scale)
         )
     }
 }
