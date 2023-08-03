@@ -5,8 +5,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -19,7 +17,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -38,10 +35,10 @@ import com.example.vakifbankplannerapp.presentation.navigation.Graph
 import com.example.vakifbankplannerapp.ui.theme.Shapes
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarTimeline
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
-import com.maxkeppeler.sheets.calendar.models.CalendarTimeline
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
@@ -59,9 +56,6 @@ fun NewEventScreen(
     navController: NavHostController,
     eventViewModel: NewEventViewModel = hiltViewModel()
 ) {
-    val focusManager = LocalFocusManager.current
-    val interactionSource = MutableInteractionSource()
-
     val eventDataList : MutableList<AddEventItem> = remember { mutableStateListOf<AddEventItem>() }
 
     val context = LocalContext.current
@@ -128,12 +122,6 @@ fun NewEventScreen(
                 .fillMaxSize()
                 .background(Color(0xfff2f2f2))
                 .padding(it)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    focusManager.clearFocus()
-                }
                 .padding(8.dp),
         ) {
 
@@ -210,7 +198,7 @@ fun TextFieldForEvent(
     TextField(
         value = fieldValue,
         onValueChange = {fieldValue = it
-                        onValueChange(it)},
+            onValueChange(it)},
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
@@ -244,8 +232,8 @@ fun EventButton(
             }
 
             //navController.navigate(BottomBarScreen.Event.route){
-             //   popUpTo(FeatureScreens.NewEventScreen.route){inclusive = true}
-           // }
+            //   popUpTo(FeatureScreens.NewEventScreen.route){inclusive = true}
+            // }
         },
         modifier = Modifier//.size(width = 60.dp, height = 30.dp)
             .size(width = 170.dp, height = 60.dp)
@@ -308,11 +296,11 @@ fun DateTimePickerForEvent(
             value = eventCalenderValue,
             onValueChange = {eventCalenderValue = it},
             readOnly = true,
-
             modifier = Modifier
                 .weight(1f)
                 .padding(8.dp)
                 .shadow(1.dp)
+
                 .focusRequester(focusRequester = FocusRequester()),
             label = { Text(text = "Meeting Date") },
             colors = TextFieldDefaults.textFieldColors(
@@ -411,7 +399,7 @@ fun createDateTimeFormatterForEvent(
     meetingDateValue: String,
     meetingTimeValue: String,
 
-): String {
+    ): String {
 
     val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")

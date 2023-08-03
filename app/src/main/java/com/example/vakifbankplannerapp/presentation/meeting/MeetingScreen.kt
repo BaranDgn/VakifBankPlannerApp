@@ -332,6 +332,11 @@ fun MeetingOrderByTeam(
                             onClick = {
                                 // Close the dialog without deleting the item
                                 showDeleteDialog = false
+                                val saat = ZamanArrangement(item.meetingTime).getOnlyDate().saat
+
+                                //if(saat == getCurrentHour()) run {
+                                    //NotificationViewModel::showNotification
+                                //}
                             }
                         ) {
                             Text("Cancel")
@@ -486,6 +491,7 @@ fun DateTimePicker(
 }
 
 
+/*
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 fun SwipeBackground(dismissState: DismissState) {
@@ -517,4 +523,4 @@ fun SwipeBackground(dismissState: DismissState) {
             modifier = Modifier.scale(scale)
         )
     }
-}
+}*/

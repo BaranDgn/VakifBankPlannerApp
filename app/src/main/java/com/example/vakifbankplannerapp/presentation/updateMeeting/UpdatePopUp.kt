@@ -35,6 +35,7 @@ import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import com.maxkeppeler.sheets.calendar.models.CalendarTimeline
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
@@ -241,6 +242,7 @@ fun DateTimePickerForUpdate(
             monthSelection = true,
             yearSelection = true,
             style = CalendarStyle.MONTH,
+            disabledTimeline = CalendarTimeline.PAST
             //disabledDates = listOf(LocalDate.now().plusDays(7))
         ),
         selection = CalendarSelection.Date{date ->
