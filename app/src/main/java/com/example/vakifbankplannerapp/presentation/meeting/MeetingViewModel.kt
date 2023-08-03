@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
+import com.example.vakifbankplannerapp.data.model.SearchMeeting
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.presentation.bottomBar.BottomBarScreen
@@ -32,47 +33,6 @@ class MeetingViewModel@Inject constructor(
 
     val didAnimationExecute = mutableStateOf(false)
 
-
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
-    var meetingList = mutableStateOf<List<Meeting>>(listOf())
-
-    //Fetch Meetings
-    //suspend fun loadMeetings() : Resource<MeetingItem>{
-     //   return repo.getMeeting()
-    //}
-
-    //Delete Meeting
-    suspend fun deleteMeeting(deleteItem: DeleteItem){
-        repo.deleteMeetingRepo(deleteMeeting = deleteItem)
-    }
-
-
-
-    //Search
-    private var initialMeetingList = listOf<Meeting>()
-    var filteredMeetingList = listOf<Meeting>()
-
-    // Define a function to update both lists
-    private fun updateMeetingList(meetings: List<Meeting>) {
-        initialMeetingList = meetings
-        filteredMeetingList = meetings
-    }
-
-    // Fetch Meetings and update the lists
-    suspend fun loadMeetings(): Resource<MeetingItem> {
-        val result = repo.getMeeting()
-        if (result is Resource.Success) {
-            updateMeetingList(result.data ?: emptyList())
-        }
-        return result
-    }
-
-
-    //----
-
     private val _searchWidgetState : MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
     val searchWidgetState : State<SearchWidgetState>  =_searchWidgetState
 
@@ -85,20 +45,51 @@ class MeetingViewModel@Inject constructor(
         _searchTextState.value = newValue
     }
 
-    private var isSearchStarting = true
-    //private var initialMeetingList = listOf<Meeting>()
-    fun searchBasedOnTeamName() {
-        val query = searchTextState.value.trim()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
+    var meetingList = mutableStateOf<List<Meeting>>(listOf())
+
+    //Fetch Meetings
+    suspend fun loadMeetings() : Resource<MeetingItem>{
+        return repo.getMeeting()
+    }
+
+    //Search Meetings
+    suspend fun searchMeetings(searchText: SearchMeeting) : Resource<MeetingItem>{
+        return repo.searchMeeting(searchText)
+    }
+
+
+    //Delete Meeting
+    suspend fun deleteMeeting(deleteItem: DeleteItem){
+        repo.deleteMeetingRepo(deleteMeeting = deleteItem)
+    }
+
+    //Search
+    private var isSearchStarting = true
+    private var initialMeetingList = listOf<Meeting>()
+    fun searchBasedOnTeamName(query : String) {
+        val listOfSearch = if (isSearchStarting) {
+            meetingList.value
+        } else {
+            initialMeetingList
+        }
         viewModelScope.launch(Dispatchers.Default) {
             if (query.isEmpty()) {
-                filteredMeetingList = initialMeetingList
+                meetingList.value = initialMeetingList
+                isSearchStarting = true
                 return@launch
             }
-
-            filteredMeetingList = initialMeetingList.filter {
-                it.teamName.contains(query, ignoreCase = true)
+            val results = listOfSearch.filter {
+                it.teamName.contains(query.trim(), ignoreCase = true)
             }
+
+            if (isSearchStarting) {
+                initialMeetingList = meetingList.value
+                isSearchStarting = false
+            }
+            meetingList.value = results
         }
     }
 

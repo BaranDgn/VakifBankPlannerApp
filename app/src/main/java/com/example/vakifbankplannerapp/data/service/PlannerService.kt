@@ -28,6 +28,10 @@ interface PlannerService {
     @POST("/Meeting/UpdateMeeting")
     suspend fun updateMeeting(@Body updateMeeting: UpdateMeeting)
 
+    // Search Meeting
+    @POST("/Meeting/SearchMeeting")
+    suspend fun searchMeeting(@Body meetingName: SearchMeeting) : MeetingItem
+
 
     //Events
     @POST("api/Event/GetEvent")
@@ -46,6 +50,14 @@ interface PlannerService {
     //Past Events
     @POST("api/Event/GetPreviousEvents")
     suspend fun getPastEvents() : Event
+
+    //Search Event
+    @POST("api/Event/SearchEvent")
+    suspend fun searchEvent(@Body eventName: SearchEvent) : Event
+
+    //Incoming Birthdays
+    @POST("BDay/getUpcomingBDays")
+    suspend fun getIncomingBirthday() : IncomingBirthday
 
 
 

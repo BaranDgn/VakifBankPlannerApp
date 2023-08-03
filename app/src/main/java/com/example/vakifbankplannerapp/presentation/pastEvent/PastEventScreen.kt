@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vakifbankplannerapp.data.model.Event
-import com.example.vakifbankplannerapp.data.model.EventItem
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankplannerapp.presentation.view.EventCardView
@@ -39,12 +39,18 @@ fun PastEventScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    val events = produceState<Resource<Event>>(initialValue = Resource.Loading()){
+    /*val pastEvents = produceState<Resource<Event>>(initialValue = Resource.Loading()){
         value = pastEventViewModel.loadPastEvents()
-    }.value
+    }.value*/
 
+    val pastEvents by pastEventViewModel.pastEventList
     val searchWidgetState by pastEventViewModel.searchWidgetStateForEvent
     val searchTextState by pastEventViewModel.searchTextStateForEvent
+
+    LaunchedEffect(Unit){
+        pastEventViewModel.loadPastEvents()
+    }
+
     Scaffold(
         topBar = {
             MainSearchBar(
@@ -56,7 +62,9 @@ fun PastEventScreen(
                 onCloseClicked = {
                     pastEventViewModel.updateSearchWidgetStateForEvent(newValue = SearchWidgetState.CLOSED)
                 },
-                onSearchClicked = {},
+                onSearchClicked = {
+                    pastEventViewModel.searchBasedOnEventName(it)
+                },
                 onSearchTriggered = { pastEventViewModel.updateSearchWidgetStateForEvent(newValue = SearchWidgetState.OPENED)
                 },
                 text = "Past Events",
@@ -74,9 +82,9 @@ fun PastEventScreen(
             Spacer(modifier = Modifier
                 .padding()
                 .height(16.dp))
-            when(events){
+            when(pastEvents){
                 is Resource.Success->{
-                    val event = events.data
+                    val event = pastEvents.data
                     if (event != null) {
                         PastEventListing(navController, event)
                     }

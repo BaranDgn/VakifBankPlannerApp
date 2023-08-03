@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -37,9 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.vakifbankplannerapp.R
 import com.example.vakifbankplannerapp.data.model.AddMeetingItem
-import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankplannerapp.presentation.addMeeting.NewMeetingViewModel
-import com.example.vakifbankplannerapp.presentation.navigation.AuthScreen
 import com.example.vakifbankplannerapp.presentation.navigation.FeatureScreens
 import com.example.vakifbankplannerapp.presentation.navigation.Graph
 import com.example.vakifbankplannerapp.ui.theme.Shapes
@@ -49,6 +49,7 @@ import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import com.maxkeppeler.sheets.calendar.models.CalendarTimeline
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
@@ -67,6 +68,8 @@ fun NewMeetingScreen(
     navController: NavHostController,
     newMeetingViewModel: NewMeetingViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
+    val interactionSource = MutableInteractionSource()
 
     val meetingDataList : MutableList<AddMeetingItem> = remember { mutableStateListOf<AddMeetingItem>() }
 
@@ -78,8 +81,6 @@ fun NewMeetingScreen(
     var meetingTimeValue by remember { mutableStateOf("") }
     var meetingContentValue by remember { mutableStateOf("") }
     var meetingNotesValue by remember { mutableStateOf("") }
-
-
 
     fun isMeetingDataValid(): Boolean {
         return teamNameValue.isNotBlank()
@@ -93,13 +94,14 @@ fun NewMeetingScreen(
         topBar = {
             TopAppBar(
                // title = {Text(text = "Add New Meeting", color = Color(0xff2F5061))},
-
                 backgroundColor = Color(0xffFFAE42),
                 contentColor = Color.Black,
                 elevation = 10.dp,
                 modifier = Modifier.height(60.dp)
             ){
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
 
                     //Navigation Content
                     Row(
@@ -136,6 +138,12 @@ fun NewMeetingScreen(
                 .fillMaxSize()
                 .background(Color(0xfff2f2f2))
                 .padding(it)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
                 .padding(8.dp)
         ) {
 
@@ -295,6 +303,7 @@ fun createDateTimeFormatter(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateTimePicker(
     onValueChangeForDate: (String) -> Unit,
@@ -312,7 +321,9 @@ fun DateTimePicker(
             monthSelection = true,
             yearSelection = true,
             style = CalendarStyle.MONTH,
-            //disabledDates = listOf(LocalDate.now().plusDays(7))
+            minYear = LocalDate.now().year,
+            disabledTimeline = CalendarTimeline.PAST
+//            disabledDates = (1..(Int.MAX_VALUE)).map { LocalDate.now().minusDays(it.toLong()) }
         ),
         selection = CalendarSelection.Date{date ->
             calenderValue = date.toString()
@@ -513,6 +524,7 @@ sealed class InputTypeForAddingMeeting(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateTimePickerScreen() {
@@ -525,6 +537,7 @@ fun DateTimePickerScreen() {
             monthSelection = true,
             yearSelection = true,
             style = CalendarStyle.MONTH,
+            disabledDates = (1..7).map { LocalDate.now().minusDays(it.toLong()) }
             //disabledDates = listOf(LocalDate.now().plusDays(7))
         ),
         selection = CalendarSelection.Date{date ->

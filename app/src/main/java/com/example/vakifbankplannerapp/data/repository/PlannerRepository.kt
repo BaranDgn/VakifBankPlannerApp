@@ -1,13 +1,9 @@
 package com.example.vakifbankplannerapp.data.repository
 
-import android.util.Log
 import com.example.vakifbankplannerapp.data.model.*
 import com.example.vakifbankplannerapp.data.service.PlannerService
 import com.example.vakifbankplannerapp.domain.util.Resource
 import dagger.hilt.android.scopes.ActivityScoped
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import javax.inject.Inject
 
 @ActivityScoped
@@ -28,6 +24,16 @@ class PlannerRepository @Inject constructor(
     suspend fun getMeeting() : Resource<MeetingItem> {
         val response = try{
             api.getMeetings()
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+    }
+
+    // Search Meeting
+    suspend fun searchMeeting(meetingName: SearchMeeting) : Resource<MeetingItem> {
+        val response = try{
+            api.searchMeeting(meetingName)
         }catch (e: java.lang.Exception){
             return Resource.Error(e.message.toString())
         }
@@ -112,10 +118,30 @@ class PlannerRepository @Inject constructor(
         return Resource.Success(response)
     }
 
+    // Search Event
+    suspend fun searchEvent(eventName: SearchEvent) : Resource<Event> {
+        val response = try{
+            api.searchEvent(eventName)
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+    }
+
     //Fetch Birthday
     suspend fun getBirthday() : Resource<Birthday> {
         val response = try{
             api.getBirthday()
+        }catch (e: java.lang.Exception){
+            return Resource.Error(e.message.toString())
+        }
+        return Resource.Success(response)
+    }
+
+    //Fetch Incoming Birthday
+    suspend fun getIncomingBirthday() : Resource<IncomingBirthday> {
+        val response = try{
+            api.getIncomingBirthday()
         }catch (e: java.lang.Exception){
             return Resource.Error(e.message.toString())
         }

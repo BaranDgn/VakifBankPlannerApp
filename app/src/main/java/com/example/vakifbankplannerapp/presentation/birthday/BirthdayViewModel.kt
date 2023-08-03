@@ -3,6 +3,7 @@ package com.example.vakifbankplannerapp.presentation.birthday
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.example.vakifbankplannerapp.data.model.Birthday
+import com.example.vakifbankplannerapp.data.model.IncomingBirthday
 import com.example.vakifbankplannerapp.data.repository.PlannerRepository
 import com.example.vakifbankplannerapp.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,5 +17,7 @@ class BirthdayViewModel@Inject constructor (
         return repo.getBirthday()
     }
 
-
+    suspend fun loadIncomingBirthdays() : Resource<IncomingBirthday> {
+        return repo.getIncomingBirthday()
+    }
 }

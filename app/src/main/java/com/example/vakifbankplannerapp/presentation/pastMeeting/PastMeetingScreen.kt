@@ -15,8 +15,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,17 +48,15 @@ fun PastMeetingScreen(
 ) {
     val context = LocalContext.current
 
-    val pastMeetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
-        value = pastMeetingViewModel.loadPastMeetings()
-    }.value
+    val pastMeetings by pastMeetingViewModel.pastMeetingList
     val searchWidgetState by pastMeetingViewModel.searchWidgetState
     val searchTextState by pastMeetingViewModel.searchTextState
 
-    var meetingOfList by remember {
-        pastMeetingViewModel.pastMeetingList
-    }
-
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit){
+        pastMeetingViewModel.loadPastMeetings()
+    }
 
     Scaffold(
         topBar = {
@@ -96,22 +96,9 @@ fun PastMeetingScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 when(pastMeetings){
                     is Resource.Success->{
-                        val meeting = pastMeetings.data
-                        if (meeting != null) {
-                            PastMeetingList(navController = navController, meetingListem = meeting)
-                            val meetingItems = meeting.mapIndexed { index, meetingi ->
-                                Meeting(
-                                    meetingi.id,
-                                    meetingi.isMeeting,
-                                    meetingi.meetingContent,
-                                    meetingi.meetingContext,
-                                    meetingi.meetingDate,
-                                    meetingi.meetingName,
-                                    meetingi.meetingTime,
-                                    meetingi.teamName,
-                                )
-                            }
-                            meetingOfList += meetingItems
+                        val pastMeeting = pastMeetings.data
+                        if(pastMeeting != null) {
+                            PastMeetingList(navController = navController, meetingListem = pastMeeting)
                         }
                     }
                     is Resource.Error->{
@@ -134,7 +121,6 @@ fun PastMeetingList(
     navController: NavController,
     meetingListem : MeetingItem,
 ) {
-
     LazyColumn(contentPadding = PaddingValues(5.dp)){
         items(meetingListem) { item ->
 

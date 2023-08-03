@@ -28,7 +28,6 @@ fun BirthdayCarView(
     birthday : String,
     howManyDayLeft : String
 ) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,35 +37,26 @@ fun BirthdayCarView(
         elevation = 5.dp,
         backgroundColor = Color.White// Set the card's background color here
     ) {
-
+        Image(
+            painter = painterResource(R.drawable.birthday_img_two),
+            contentDescription = null,
+            modifier = Modifier
+                .height(160.dp),
+            contentScale = ContentScale.FillBounds
+        )
         Row(modifier = Modifier
-            .height(160.dp)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color.White,
-                        Color.LightGray
-                    )
-                )
-            )){
-            Image(
-                painter = painterResource(R.drawable.birthday_img_two),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.FillBounds
-            )
-
+            .height(160.dp).padding(bottom = 32.dp)
+            ){
             Box(modifier = Modifier
                 .fillMaxHeight()
-                .weight(2f)
-                .padding(8.dp),
+                .weight(1.5f)
+                .padding(bottom = 8.dp, start = 8.dp),
                 contentAlignment = Alignment.Center
             ){
 
                 Text(
-                    text = "BARAN DOĞAN",
-                    style = TextStyle(color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                    text = fullName.uppercase(),
+                    style = TextStyle(color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                 )
             }
             Box(modifier = Modifier
@@ -77,17 +67,17 @@ fun BirthdayCarView(
             ){
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(bottom=16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceEvenly
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "10/05/1998",
-                        style = TextStyle(color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.Normal)
+                        text = birthday,
+                        style = TextStyle(color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Normal)
                     )
                     Text(
-                        text = "19 gün kaldı",
-                        style = TextStyle(color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.Light)
+                        text = "$howManyDayLeft gün kaldı",
+                        style = TextStyle(color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Light)
                     )
                 }
             }

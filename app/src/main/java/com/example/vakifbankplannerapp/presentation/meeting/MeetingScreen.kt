@@ -34,6 +34,7 @@ import com.example.vakifbankplannerapp.data.model.DeleteItem
 import com.example.vakifbankplannerapp.data.model.Meeting
 import com.example.vakifbankplannerapp.data.model.MeetingItem
 import com.example.vakifbankplannerapp.domain.util.AdminControl
+import com.example.vakifbankplannerapp.data.model.SearchMeeting
 import com.example.vakifbankplannerapp.domain.util.Resource
 import com.example.vakifbankplannerapp.domain.util.ZamanArrangement
 import com.example.vakifbankplannerapp.presentation.authantication.LoginViewModel
@@ -70,36 +71,46 @@ fun MeetingScreen(
 
     val context = LocalContext.current
 
-    val meetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
+    /*val meetings = produceState<Resource<MeetingItem>>(initialValue = Resource.Loading()){
         value = meetingViewModel.loadMeetings()
-    }.value
+    }.value*/
+
+    var meetings by remember {mutableStateOf<Resource<MeetingItem>>(Resource.Loading())}
+
     val searchWidgetState by meetingViewModel.searchWidgetState
     val searchTextState by meetingViewModel.searchTextState
 
-    //var meetingOfList by remember { meetingViewModel.meetingList }
+    var meetingOfList by remember { meetingViewModel.meetingList }
 
     val scope = rememberCoroutineScope()
 
    val isAdminCheck = loginViewModel.isAdmin
 
-    val meetingList by remember { derivedStateOf { meetingViewModel.filteredMeetingList } }
-
-    //val adminControl = AdminControl().adminControlValue
-
+    LaunchedEffect(Unit){
+        meetings = meetingViewModel.loadMeetings()
+    }
 
     Scaffold(
         topBar = {
-            MainSearchBar(
-                searchWidgetState = searchWidgetState,
-                searchTextState = searchTextState,
-                onTextChange = { meetingViewModel.updateSearchTextState(it) },
-                onCloseClicked = { meetingViewModel.updateSearchWidgetState(SearchWidgetState.CLOSED) },
-                onSearchClicked = {
-                    meetingViewModel.searchBasedOnTeamName()
-                },
-                onSearchTriggered = { meetingViewModel.updateSearchWidgetState(SearchWidgetState.OPENED) },
-                text = "Meetings"
-            )
+                 MainSearchBar(
+                     searchWidgetState = searchWidgetState,
+                     searchTextState = searchTextState,
+                     onTextChange = {
+                         meetingViewModel.updateSearchTextState(newValue = it)
+                     },
+                     onCloseClicked = {
+                         meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+                     },
+                     onSearchClicked = {
+                         meetings = Resource.Loading()
+                         scope.launch{
+                             meetings = meetingViewModel.searchMeetings(SearchMeeting(teamName = it))
+                         }
+                     },
+                     onSearchTriggered = { meetingViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
+                     },
+                     text="Meetings"
+                 )
         },
 
         floatingActionButton = {
@@ -170,21 +181,10 @@ fun MeetingScreen(
                             //MeetingOrderByTeam(navController = navController, meetingListem = meeting)
                             MeetingOrderByTeam(
                                 navController = navController,
-                                meetingListem = meetingList,
+                                meetingListem = meeting,
                                 meetingViewModel = meetingViewModel,
                             )
-                            val meetingItems = meeting.mapIndexed { index, meetingi ->
-                                Meeting(
-                                    meetingi.id,
-                                    meetingi.isMeeting,
-                                    meetingi.meetingContent,
-                                    meetingi.meetingContext,
-                                    meetingi.meetingDate,
-                                    meetingi.meetingName,
-                                    meetingi.meetingTime,
-                                    meetingi.teamName,
-                                )
-                            }
+
                             //meetingList += meetingItems
                         }
                     }
@@ -218,34 +218,34 @@ fun MeetingOrderByTeam(
     var selectedMeeting by remember { mutableStateOf<Meeting?>(null) }
 
     LazyColumn(contentPadding = PaddingValues(5.dp)){
-        items(meetingListem) {  item ->
+        items(meetingListem) { item ->
 
             val tarih = ZamanArrangement(item.meetingDate).getOnlyDate()
 
             val dismissState = rememberDismissState(
                 confirmStateChange = {
                     if(AdminControl.adminControl){
-                        if (it == DismissValue.DismissedToEnd) {
-                            //navController.navigate(FeatureScreens.NewMeetingScreen.route)
-                            CoroutineScope(Dispatchers.IO).launch{
-                                // meetingViewModel.deleteMeeting(DeleteItem(item.id))
-                                //AlertToDelete(DeleteItem(item.id), meetingViewModel)
-                                itemToDelete = DeleteItem(item.id)
-                                showDeleteDialog = true
-
-                                //delay(2000L)
-                                //meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route)
-                            }
+                        if (it == DismissValue.DismissedToStart) {
+                        //navController.navigate(FeatureScreens.NewMeetingScreen.route)
+                        CoroutineScope(Dispatchers.IO).launch{
+                           // meetingViewModel.deleteMeeting(DeleteItem(item.id))
+                            //AlertToDelete(DeleteItem(item.id), meetingViewModel)
+                            itemToDelete = DeleteItem(item.id)
+                            showDeleteDialog = true
+                            //TEMPORARY SOLUTION
+                            //delay(2000L)
+                            //meetingViewModel.refreshMeetings(navController, BottomBarScreen.Meeting.route)
                         }
                     }
-
-                    it != DismissValue.DismissedToEnd
+                    }
+                    it != DismissValue.DismissedToStart
                 }
             )
             LaunchedEffect(dismissState){
+                if (!meetingViewModel.didAnimationExecute.value){
                     if (item == meetingListem.first()){
                         dismissState.animateTo(
-                            DismissValue.DismissedToEnd,
+                            DismissValue.DismissedToStart,
                             anim = tween(
                                 durationMillis = 400,
                                 easing = LinearOutSlowInEasing
@@ -260,12 +260,14 @@ fun MeetingOrderByTeam(
                             )
                         )
                     }
+                    meetingViewModel.didAnimationExecute.value = true
+                }
             }
 
             if(AdminControl.adminControl){
                 SwipeToDismiss(
                     state = dismissState,
-                    directions = setOf(DismissDirection.StartToEnd),
+                    directions = setOf(DismissDirection.EndToStart),
                     dismissThresholds = { direction ->
                         FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
                     },
@@ -330,11 +332,6 @@ fun MeetingOrderByTeam(
                             onClick = {
                                 // Close the dialog without deleting the item
                                 showDeleteDialog = false
-                                val saat = ZamanArrangement(item.meetingTime).getOnlyDate().saat
-
-                                //if(saat == getCurrentHour()) run {
-                                    NotificationViewModel::showNotification
-                                //}
                             }
                         ) {
                             Text("Cancel")
@@ -357,9 +354,6 @@ fun MeetingOrderByTeam(
                     }
                 )
             }
-
-
-
 
         }
 
