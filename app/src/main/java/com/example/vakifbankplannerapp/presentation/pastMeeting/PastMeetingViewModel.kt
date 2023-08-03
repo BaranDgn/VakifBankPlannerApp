@@ -21,11 +21,15 @@ import javax.inject.Inject
 class PastMeetingViewModel @Inject constructor(
     private var repo : PlannerRepository
 ) : ViewModel(){
+
     private val _searchWidgetState : MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
     val searchWidgetState : State<SearchWidgetState> =_searchWidgetState
 
     private val _searchTextState : MutableState<String> = mutableStateOf(value ="")
     val searchTextState : State<String> = _searchTextState
+
+    private val _pastMeetingList : MutableState<Resource<MeetingItem>> = mutableStateOf(value = Resource.Loading())
+    val pastMeetingList : State<Resource<MeetingItem>> = _pastMeetingList
 
     fun updateSearchWidgetState(newValue: SearchWidgetState){
         _searchWidgetState.value = newValue
@@ -38,35 +42,29 @@ class PastMeetingViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    var pastMeetingList = mutableStateOf<List<Meeting>>(listOf())
-
     suspend fun loadPastMeetings() : Resource<MeetingItem> {
-        return repo.getPastMeeting()
+        _pastMeetingList.value = repo.getPastMeeting()
+        return _pastMeetingList.value
     }
 
-    private var isSearchStarting = true
-    private var initialMeetingList = listOf<Meeting>()
-    fun searchBasedOnTeamName(query : String){
-        val listOfSearch = if(isSearchStarting){
-            pastMeetingList.value
-        }else{
-            initialMeetingList
-        }
-        viewModelScope.launch(Dispatchers.Default){
-            if(query.isEmpty()){
-                pastMeetingList.value = initialMeetingList
-                isSearchStarting = true
-                return@launch
+    fun searchBasedOnTeamName(query : String) {
+        val listOfSearch = _pastMeetingList.value.data!!
+        _pastMeetingList.value = Resource.Loading()
+        if (query.isEmpty()) {
+            viewModelScope.launch(Dispatchers.Default) {
+                _pastMeetingList.value = loadPastMeetings()
             }
+            return
+        }
+        viewModelScope.launch(Dispatchers.Default) {
             val results = listOfSearch.filter {
                 it.teamName.contains(query.trim(), ignoreCase = true)
             }
+            val temp_result : MeetingItem = MeetingItem()
 
-            if(isSearchStarting){
-                initialMeetingList = pastMeetingList.value
-                isSearchStarting = false
-            }
-            pastMeetingList.value = results
+            temp_result.addAll(results)
+
+            _pastMeetingList.value = Resource.Success(temp_result)
         }
     }
 

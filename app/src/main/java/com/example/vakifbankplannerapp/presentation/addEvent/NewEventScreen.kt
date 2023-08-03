@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +43,7 @@ import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import com.maxkeppeler.sheets.calendar.models.CalendarTimeline
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
@@ -57,6 +61,9 @@ fun NewEventScreen(
     navController: NavHostController,
     eventViewModel: NewEventViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
+    val interactionSource = MutableInteractionSource()
+
     val eventDataList : MutableList<AddEventItem> = remember { mutableStateListOf<AddEventItem>() }
 
     val context = LocalContext.current
@@ -123,6 +130,12 @@ fun NewEventScreen(
                 .fillMaxSize()
                 .background(Color(0xfff2f2f2))
                 .padding(it)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
                 .padding(8.dp),
         ) {
 
@@ -271,6 +284,7 @@ fun DateTimePickerForEvent(
             monthSelection = true,
             yearSelection = true,
             style = CalendarStyle.MONTH,
+            disabledTimeline = CalendarTimeline.PAST
             //disabledDates = listOf(LocalDate.now().plusDays(7))
         ),
         selection = CalendarSelection.Date{ date ->
@@ -297,11 +311,11 @@ fun DateTimePickerForEvent(
             value = eventCalenderValue,
             onValueChange = {eventCalenderValue = it},
             readOnly = true,
+
             modifier = Modifier
                 .weight(1f)
                 .padding(8.dp)
                 .shadow(1.dp)
-
                 .focusRequester(focusRequester = FocusRequester()),
             label = { Text(text = "Meeting Date") },
             colors = TextFieldDefaults.textFieldColors(

@@ -22,10 +22,9 @@ import javax.inject.Inject
 class PastEventViewModel @Inject constructor(
     private var repo : PlannerRepository
 ) : ViewModel(){
-    suspend fun loadPastEvents() : Resource<Event>
-    {
-        return repo.getPastEvent()
-    }
+
+    private val _pastEventList : MutableState<Resource<Event>> = mutableStateOf(value = Resource.Loading())
+    val pastEventList : State<Resource<Event>> = _pastEventList
 
     private val _searchWidgetStateForEvent : MutableState<SearchWidgetState> = mutableStateOf(value = SearchWidgetState.CLOSED)
     val searchWidgetStateForEvent : State<SearchWidgetState> =_searchWidgetStateForEvent
@@ -39,5 +38,32 @@ class PastEventViewModel @Inject constructor(
 
     fun updateSearchTextStateForEvent(newValue: String){
         _searchTextStateForEvent.value = newValue
+    }
+
+    suspend fun loadPastEvents() : Resource<Event>
+    {
+        _pastEventList.value = repo.getPastEvent()
+        return _pastEventList.value
+    }
+
+    fun searchBasedOnEventName(query : String) {
+        val listOfSearch = _pastEventList.value.data!!
+        _pastEventList.value = Resource.Loading()
+        if (query.isEmpty()) {
+            viewModelScope.launch(Dispatchers.Default) {
+                _pastEventList.value = loadPastEvents()
+            }
+            return
+        }
+        viewModelScope.launch(Dispatchers.Default) {
+            val results = listOfSearch.filter {
+                it.eventName.contains(query, ignoreCase = true)
+            }
+            val temp_result : Event = Event()
+
+            temp_result.addAll(results)
+
+            _pastEventList.value = Resource.Success(temp_result)
+        }
     }
 }
